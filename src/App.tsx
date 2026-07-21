@@ -48,9 +48,11 @@ export default function App() {
           const songTitle = data.now_playing.song.title || "Música no Ar";
           const songArtist = data.now_playing.song.artist || "Circuito Interno";
           
-          const title = isLive ? currentShowName : songTitle;
-          // Junta o nome do Artista com o nome da Rádio para garantir que aparece sempre
-          const artist = isLive ? "Rádio Marcoense 93.3 FM · Circuito Interno" : `${songArtist} · Circuito Interno`;
+          // Destaque no topo para o Circuito Interno / Programa em direto
+          const mainTitle = isLive ? `Circuito Interno · ${currentShowName}` : "Circuito Interno";
+          // Segunda linha com o Artista - Música
+          const subtitleArtist = isLive ? "Rádio Marcoense 93.3 FM" : `${songArtist} - ${songTitle}`;
+          
           const artworkUrl = data.now_playing.song.art || "/logo.png";
 
           setCurrentSong({
@@ -59,12 +61,12 @@ export default function App() {
             art: data.now_playing.song.art || ""
           });
 
-          // Mostra Banda, Música e Circuito Interno no ecrã de bloqueio
+          // Envia para o ecrã de bloqueio com Circuito Interno no topo
           if ("mediaSession" in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
-              title: title,
-              artist: artist,
-              album: "Circuito Interno - Rádio Online",
+              title: mainTitle,
+              artist: subtitleArtist,
+              album: "Emissão 24/7",
               artwork: [
                 { src: artworkUrl, sizes: "512x512", type: "image/png" }
               ]
