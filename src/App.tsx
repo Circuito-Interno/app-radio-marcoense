@@ -1,110 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Pause, Volume2, VolumeX, Mail, Phone, Radio, Globe, Loader2, Clock, Music, SkipForward, SkipBack } from "lucide-react";
+import { Pause, Volume2, VolumeX, Mail, Phone, Radio, Globe, Loader2, Clock, Music } from "lucide-react";
 
 const STREAM_URL = "https://streaming.shoutcast.com/marcoense-fm";
-
-// Lista com os nomes exatos das tuas músicas dentro de public/playlist.mp3/
-const RAW_PLAYLIST = [
-  "21 hertzWatching YouInfinity Coast2013Trip-Hop.mp3",
-  "A Flock Of SeagullsCastles In The SkySome Dreams2024-12-13.mp3",
-  "AaRONBlouson NoirWe Cut the Night2015.mp3",
-  "AaRONFASTLANEANATOMY OF LIGHT.mp3",
-  "Active ChildJohnny BelindaYou Are All I See2011Ambient Pop.mp3",
-  "AdaFaithMeine zarten Pfoten (Bonus Track Version)2011.mp3",
-  "AdnaDreamerNight2014-02-05.mp3",
-  "AFARSomething SpecialChanging Rules2025.mp3",
-  "AimCold Water MusicCold Water Music2007Breaks; Downtempo; Electronic.mp3",
-  "Alabama ShakesThis FeelingSound & Color2015-04-22Soul.mp3",
-  "Alan WalkerFadedDifferent World2018Dance-Pop; Edm; Electro.mp3",
-  "Alex Barck, Jonatan Bäckelie - Doubter.mp3",
-  "AlexanderTruthAlexander2011-03-01Folk.mp3",
-  "All About EveMartha's HarbourAll About Eve1988Gothic Rock.mp3",
-  "All India RadioPersistFall2008-07-21Ambient.mp3",
-  "All India RadioThe Red RoomThe Unified Field2025.mp3",
-  "AmatorskiSoldierTbc2013-02-04.mp3",
-  "AmatorskiThe KingSame Stars We Shared2013-02-04.mp3",
-  "Amos LeeColorsAmos Lee2005-03-01Singer-Songwriter.mp3",
-  "anaiisDeus DeusDeus Deus2025-06-13.mp3",
-  "Anderholm, Alexandra Pride - Unbound.mp3",
-  "Angelo BadalamentiTwin Peaks ThemeTwin Peaks (Limited Event Series Soundtrack)2017Ambient; Dark Jazz; Jazz.mp3",
-  "Angus & Julia StoneDraw Your SwordsDown The Way2010Folk; Folk Rock; Indie Pop.mp3",
-  "Angus PowellMonstersMonsters2015-10-02Bones.mp3",
-  "Animal Triste, Marina HandsA GIRL LIKE YOUA GIRL LIKE YOU2025.mp3",
-  "Anna von HausswolffMountains CraveCeremony2012-07-18Neofolk.mp3",
-  "AnnieAmerican CarsDark Hearts.mp3",
-  "AntipolePerceptionsCrystalline2023-05-12.mp3",
-  "Antony SzmierekRestless Leg SyndromeService Station At The End Of The Universe2025-02-28Stutter House.mp3",
-  "Aphex TwinAgeispolisSelected Ambient Works 85–922021-01-29Idm.mp3",
-  "Arcade FireYear of the SnakePink Elephant2025-05-09.mp3",
-  "ArchiveCity WallsCity Walls2026.mp3",
-  "Art School GirlfriendBending BackBending Back2017-09-08Dream Pop.mp3",
-  "Asaf AvidanDifferent PulsesDifferent Pulses2012Folk Rock; Pop; Rock.mp3",
-  "ÁsgeirAgainst The CurrentAgainst The Current2026.mp3",
-  "AthleteWiresTourist.mp3",
-  "A-haHunting High And LowHunting High And Low201580's; Alternative; Contemporary PopRock.mp3",
-  "A-haThe Sun Always Shines On T.V.Hunting High And Low201580's; Alternative; Contemporary PopRock.mp3",
-  "a-haI've Been Losing YouScoundrel Days (Deluxe Edition)1986-10-06.mp3",
-  "A NaifaMúsicaCanções Subterrâneas2004-07-09.mp3",
-  "A garota nãoDilúvio2 de Abril2022-04-02Portugal.mp3",
-  "Backwards Charm - Troubler.mp3",
-  "BalthazarBunkerBunker2015-07-06Indie.mp3",
-  "BanIrreal SocialAtlantic Mavericks A Decade of Experimental Music in Portugal (82-93)2024-06-14Post-Punk.mp3",
-  "Band of HorsesThe FuneralEverything All The Time.mp3",
-  "Barclay James HarvestChild Of The UniverseEveryone Is Everybody Else2006Art Rock; Progressive Rock; Progressive-Rock.mp3",
-  "BauhausAll We Ever Wanted Was EverythingThe Sky’s Gone Out1990Goth; Goth Rock; Gothic Rock.mp3",
-  "Ben HarperAmen OmenDiamonds on the Inside2003Blues.mp3",
-  "Ben HarperMorning YearningBoth Sides Of The Gun2006Adult Alternative Rock; Alternative And Punk; Alternative Rock.mp3",
-  "BjörkAll Is Full Of LoveGreatest Hits2002-11-04Art Pop.mp3",
-  "Bob DylanMan in the Long Black CoatChronicles, Volume One Limited Edition 6 Song Sampler2004-10-05Folk.mp3",
-  "Bon IverHoloceneBon Iver20221–9 Wochen; Baroque Pop; English.mp3",
-  "Bon JoviLivin’ on a PrayerSlippery When Wet2025-02-28Hard Rock.mp3",
-  "BORDER 242RetrosonicAnalog Prog #32024-01-26.mp3",
-  "Breaking BenjaminThe Diary of JanePhobia2006-08-08Alternative Rock.mp3",
-  "Breaking Bones.mp3",
-  "Bruce SpringsteenYoungstownThe Ghost Of Tom Joad1995-11-21.mp3",
-  "Bryan AdamsRun To You(Everything I Do) I Do It For You2001Ballad; Pop; Pop Rock.mp3",
-  "Bryan FerrySlave To LoveBoys And Girls1985.mp3",
-  "Cigarettes After SexApocalypseCigarettes After Sex2017-06-09Dream Pop.mp3",
-  "CinderellaDon’t Know What You Got (Till It’s Gone)Long Cold Winter80s; Glam Metal; Hard Rock.mp3",
-  "Cock RobinJust Around The Corner100 80’er Hits2008Arena Rock; Ballad; Classic Rock.mp3",
-  "Cock RobinThe Promise You Made100 80s Hits2008.mp3",
-  "Cowboy JunkiesSweet JaneThe Trinity SessionAlternative Country; Alternative Rock; Blues Rock.mp3",
-  "Cutting Crew(I Just) Died In Your ArmsBroadcastAor Classic Rock; Electronic; New Wave.mp3",
-  "DaughterYouthIf You Leave2013Alternative Rock; Folk Rock; Indie Folk.mp3",
-  "Dire StraitsBrothers in ArmsBrothers in Arms2025-05-16Classic Rock.mp3",
-  "Drab MajestyToo Soon To TellThe Demonstration2017Dark Wave; Electronic; Ethereal Wave.mp3",
-  "EditorsThe Phone BookThe Weight Of Your Love2013Alternative Rock; Indie Rock; Rock.mp3",
-  "EmancipatorGreenlandSafe In The Steep Cliffs2010Downbeat; Downtempo; Electronic.mp3",
-  "EmikaPrimary ColoursDva2013Electronic.mp3",
-  "Emotive GreyCosmosSky Gazing2023-09-01.mp3",
-  "EuropeThe Final Countdown'80s Metal Gold2007Classic Rock; Heavy Metal; Rock.mp3",
-  "Fischer-ZSo LongGoing Deaf For A Living1980-05.mp3",
-  "Frankie Goes To HollywoodThe Power Of LoveBang! ... Hard On (The Greatest Hits & The Complete Ztt Videos)200280s; Alternative Dance; Ballad.mp3",
-  "GNRBem Vindo Ao PassadoPopless2006-07-14Portuguese.mp3",
-  "Guns N’ RosesNovember RainUse Your Illusion I20225+ Wochen; 90s; Album Rock.mp3",
-  "Hail the Ghost - Swarms.mp3",
-  "Hazel O’ConnorWill YouBreaking Glass1988-01-12.mp3",
-  "HIMJoin Me In DeathRazorblade Romance (Deluxe Re-Mastered)2014-12-15.mp3",
-  "HozierTake Me to ChurchHozier2023-06-16Indie.mp3",
-  "Hunter as a HorseFallen LeavesThe Two Magics Vol.12016-04-22Electronic.mp3",
-  "JamesOne Of The ThreeLaid2001Alternative Rock; Brit Pop; Indie Pop.mp3",
-  "Jamie xx feat. RomyStranger in a Room (instrumental)In Colour2015-05-29.mp3",
-  "KaleidaEcho Saw YouTear the Roots.mp3",
-  "KasabianWhere Did All The Love Go101 Classic Hits2017.mp3",
-  "Kings of LeonWALLSWALLS2016Alternative Rock.mp3",
-  "LambGabriel (original)Café del Mar, volumen ocho2002Trip-Hop.mp3",
-  "Lara LiTelepatia100 Grandes Vedetas Portuguesas1997Portuguese.mp3",
-  "Laura BraniganSelf ControlSelf Control Tour2001Pop.mp3",
-  "Led ZeppelinStairway to Heaven[Led Zeppelin IV]1971-11-08Classic Rock.mp3",
-  "Lena d’ÁguaSempre que o amor me quiserLusitânia1984Portugal.mp3",
-  "Lenny KravitzBelieve in MeRozengeur & Wodka Lime, Deel 22002-11Rock.mp3",
-  "Leonard CohenFirst We Take ManhattanI’m Your Man2017-01-25Singer-Songwriter.mp3",
-  "Linkin ParkOne More Light[standalone recordings]2020Ambient Pop.mp3",
-  "Lloyd Cole and the CommotionsForest Fire (extended version)Rattlesnakes198580S.mp3"
-];
-
-// Codifica automaticamente os nomes dos ficheiros para links Web válidos (trata espaços, acentos, etc.)
-const PLAYLIST = RAW_PLAYLIST.map((filename) => `/playlist.mp3/${encodeURIComponent(filename)}`);
+const BACKGROUND_MUSIC_URL = "/musica.mp3"; 
 
 const SOCIALS = {
   facebook: "https://www.facebook.com/radiomarcoense/",
@@ -126,7 +24,6 @@ export default function App() {
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   
   const [isLive, setIsLive] = useState(false);
   const [countdownText, setCountdownText] = useState("");
@@ -197,22 +94,16 @@ export default function App() {
     const handlePause = () => setPlaying(false);
     const handleWaiting = () => setLoading(true);
     const handleCanPlay = () => setLoading(false);
-    const handleEnded = () => {
-      if (!isLive && PLAYLIST.length > 0) {
-        setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
-      }
-    };
     const handleError = () => {
       setLoading(false);
       setPlaying(false);
-      setError("Erro ao carregar o áudio. Tenta saltar para a próxima música.");
+      setError("Não foi possível carregar o áudio. Garanta que o ficheiro 'musica.mp3' está na pasta 'public'.");
     };
 
     a.addEventListener("playing", handlePlaying);
     a.addEventListener("pause", handlePause);
     a.addEventListener("waiting", handleWaiting);
     a.addEventListener("canplay", handleCanPlay);
-    a.addEventListener("ended", handleEnded);
     a.addEventListener("error", handleError);
 
     updateStreamStatus();
@@ -225,17 +116,9 @@ export default function App() {
       a.removeEventListener("pause", handlePause);
       a.removeEventListener("waiting", handleWaiting);
       a.removeEventListener("canplay", handleCanPlay);
-      a.removeEventListener("ended", handleEnded);
       a.removeEventListener("error", handleError);
     };
-  }, [isLive]);
-
-  useEffect(() => {
-    if (playing && !isLive && audioRef.current && PLAYLIST.length > 0) {
-      audioRef.current.src = PLAYLIST[currentTrackIndex];
-      audioRef.current.play().catch(console.error);
-    }
-  }, [currentTrackIndex]);
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -257,7 +140,7 @@ export default function App() {
     try {
       setError(null);
       setLoading(true);
-      a.src = isLive ? STREAM_URL : PLAYLIST[currentTrackIndex];
+      a.src = isLive ? STREAM_URL : BACKGROUND_MUSIC_URL;
       await a.play();
     } catch (e) {
       console.error(e);
@@ -265,18 +148,6 @@ export default function App() {
       setPlaying(false);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const nextTrack = () => {
-    if (!isLive && PLAYLIST.length > 0) {
-      setCurrentTrackIndex((prev) => (prev + 1) % PLAYLIST.length);
-    }
-  };
-
-  const prevTrack = () => {
-    if (!isLive && PLAYLIST.length > 0) {
-      setCurrentTrackIndex((prev) => (prev - 1 + PLAYLIST.length) % PLAYLIST.length);
     }
   };
 
@@ -298,7 +169,7 @@ export default function App() {
               <span className={`absolute inline-flex h-full w-full rounded-full ${isLive ? "bg-red-500/60" : "bg-amber-500/60"} ${playing ? "animate-ping" : ""}`}></span>
               <span className={`relative inline-flex size-2 rounded-full ${isLive ? "bg-red-500" : "bg-amber-500"}`}></span>
             </span>
-            {isLive ? "Programa Em Direto" : "Playlist Circuito Interno"}
+            {isLive ? "Programa Em Direto" : "Música de Apoio"}
           </div>
 
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight bg-gradient-to-b from-white to-neutral-300 bg-clip-text text-transparent">
@@ -310,52 +181,38 @@ export default function App() {
         </header>
 
         <section className="flex-1 flex flex-col items-center justify-center py-6">
-          <div className="flex items-center gap-6">
-            {!isLive && (
-              <button onClick={prevTrack} className="p-3 text-neutral-400 hover:text-white transition active:scale-95">
-                <SkipBack className="size-6" />
-              </button>
-            )}
-
-            <div className="relative">
-              <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-700 ${
-                playing 
-                  ? isLive ? "opacity-50 scale-110 bg-gradient-to-br from-red-600 via-orange-500 to-pink-600" : "opacity-40 scale-105 bg-gradient-to-br from-amber-500 to-orange-600"
-                  : "opacity-20 scale-90 bg-white/10"
-              }`} />
-              
-              <button
-                onClick={toggle}
-                className={`relative size-44 rounded-full flex items-center justify-center shadow-2xl transition duration-300 active:scale-95 hover:scale-[1.01] cursor-pointer ${
-                  isLive ? "bg-red-600 text-white" : "bg-amber-500 text-black"
-                }`}
-              >
-                {loading ? (
-                  <Loader2 className="size-16 animate-spin" strokeWidth={1.5} />
-                ) : playing ? (
-                  <Pause className="size-16" strokeWidth={1.5} fill="currentColor" />
-                ) : isLive ? (
-                  <Radio className="size-16" strokeWidth={1.5} />
-                ) : (
-                  <Music className="size-16" strokeWidth={1.5} />
-                )}
-              </button>
-            </div>
-
-            {!isLive && (
-              <button onClick={nextTrack} className="p-3 text-neutral-400 hover:text-white transition active:scale-95">
-                <SkipForward className="size-6" />
-              </button>
-            )}
+          <div className="relative">
+            <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-700 ${
+              playing 
+                ? isLive ? "opacity-50 scale-110 bg-gradient-to-br from-red-600 via-orange-500 to-pink-600" : "opacity-40 scale-105 bg-gradient-to-br from-amber-500 to-orange-600"
+                : "opacity-20 scale-90 bg-white/10"
+            }`} />
+            
+            <button
+              onClick={toggle}
+              className={`relative size-44 rounded-full flex items-center justify-center shadow-2xl transition duration-300 active:scale-95 hover:scale-[1.01] cursor-pointer ${
+                isLive ? "bg-red-600 text-white" : "bg-amber-500 text-black"
+              }`}
+            >
+              {loading ? (
+                <Loader2 className="size-16 animate-spin" strokeWidth={1.5} />
+              ) : playing ? (
+                <Pause className="size-16" strokeWidth={1.5} fill="currentColor" />
+              ) : isLive ? (
+                <Radio className="size-16" strokeWidth={1.5} />
+              ) : (
+                <Music className="size-16" strokeWidth={1.5} />
+              )}
+            </button>
           </div>
 
           <div className="mt-6 text-center">
             <div className="text-sm font-semibold tracking-wide flex items-center justify-center gap-1.5">
               {playing 
-                ? isLive ? "A escutar o programa em direto na rádio!" : "A escutar a Playlist do Circuito Interno 🎧" 
+                ? isLive ? "A escutar o programa em direto na rádio!" : "A escutar a música do Circuito Interno" 
                 : loading ? "A ligar..." 
                 : isLive ? "Toca para ligar à emissão em direto 🔴" 
-                : "Toca para ouvir a Playlist 🎧"}
+                : "Toca para ouvir a música de fundo 🎧"}
             </div>
             <div className="text-xs text-neutral-500 mt-1">Rádio Marcoense · 93.3 FM</div>
           </div>
@@ -398,7 +255,7 @@ export default function App() {
             } />
             <SocialButton href={SOCIALS.spotify} label="Spotify" icon={
               <svg viewBox="0 0 24 24" className="size-4" fill="currentColor">
-                <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 0 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
+                <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 1 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
               </svg>
             } />
             <SocialButton href={SOCIALS.website} label="Web" icon={<Globe className="size-4" />} />
