@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, Mail, Phone, Radio, Globe, Loader2, Clock } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Mail, Phone, Radio, Globe, Loader2, Clock, Music } from "lucide-react";
 
 const STREAM_URL = "https://streaming.shoutcast.com/marcoense-fm";
+const BACKGROUND_MUSIC_URL = "/musica.mp3"; // Caminho para o teu ficheiro MP3 na pasta public
 
 const SOCIALS = {
   facebook: "https://www.facebook.com/radiomarcoense/",
@@ -52,14 +53,6 @@ export default function App() {
       return;
     }
 
-    if (!liveDetected && playing) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-      }
-      setPlaying(false);
-    }
-
     let minDiff = Infinity;
     SHOWS_CONFIG.forEach(show => {
       show.days.forEach(day => {
@@ -104,7 +97,7 @@ export default function App() {
     const handleError = () => {
       setLoading(false);
       setPlaying(false);
-      setError("Emissão offline ou link de stream incorreto.");
+      setError("Erro ao carregar o áudio. Verifique se o ficheiro MP3 está na pasta public.");
     };
 
     a.addEventListener("playing", handlePlaying);
@@ -134,11 +127,6 @@ export default function App() {
   }, [volume, muted]);
 
   const toggle = async () => {
-    if (!isLive) {
-      alert("A emissão do programa Circuito Interno encontra-se fechada de momento. Acompanhe a contagem decrescente para o próximo programa!");
-      return;
-    }
-
     const a = audioRef.current;
     if (!a) return;
 
@@ -152,11 +140,12 @@ export default function App() {
     try {
       setError(null);
       setLoading(true);
-      a.src = STREAM_URL;
+      // Se estiver em direto toca o stream da rádio, senão toca o MP3 de fundo
+      a.src = isLive ? STREAM_URL : BACKGROUND_MUSIC_URL;
       await a.play();
     } catch (e) {
       console.error(e);
-      setError("Erro ao ligar ao servidor de emissão.");
+      setError("Erro ao iniciar a reprodução de áudio.");
       setPlaying(false);
     } finally {
       setLoading(false);
@@ -175,16 +164,15 @@ export default function App() {
 
         <header className="pt-12 pb-6 text-center shrink-0">
           <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.18em] transition-all ${
-            isLive ? "border-red-500/30 bg-red-500/10 text-red-400" : "border-white/10 bg-white/5 text-neutral-400"
+            isLive ? "border-red-500/30 bg-red-500/10 text-red-400" : "border-amber-500/30 bg-amber-500/10 text-amber-400"
           }`}>
             <span className="relative flex size-2">
-              <span className={`absolute inline-flex h-full w-full rounded-full bg-red-500/60 ${playing ? "animate-ping" : ""}`}></span>
-              <span className={`relative inline-flex size-2 rounded-full ${isLive ? "bg-red-500" : "bg-neutral-500"}`}></span>
+              <span className={`absolute inline-flex h-full w-full rounded-full ${isLive ? "bg-red-500/60" : "bg-amber-500/60"} ${playing ? "animate-ping" : ""}`}></span>
+              <span className={`relative inline-flex size-2 rounded-full ${isLive ? "bg-red-500" : "bg-amber-500"}`}></span>
             </span>
-            {isLive ? "Programa Em Direto" : "Emissão Fechada"}
+            {isLive ? "Programa Em Direto" : "Emissão de Apoio / Música"}
           </div>
 
-          {/* DESTAQUE PRINCIPAL NO CIRCUITO INTERNO */}
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight bg-gradient-to-b from-white to-neutral-300 bg-clip-text text-transparent">
             Circuito Interno
           </h1>
@@ -195,58 +183,60 @@ export default function App() {
 
         <section className="flex-1 flex flex-col items-center justify-center py-6">
           <div className="relative">
-            <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-700 ${playing ? "opacity-50 scale-110 bg-gradient-to-br from-red-600 via-orange-500 to-pink-600" : isLive ? "opacity-20 scale-90 bg-red-600" : "opacity-0"}`} />
+            <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-700 ${
+              playing 
+                ? isLive ? "opacity-50 scale-110 bg-gradient-to-br from-red-600 via-orange-500 to-pink-600" : "opacity-40 scale-105 bg-gradient-to-br from-amber-500 to-orange-600"
+                : "opacity-20 scale-90 bg-white/10"
+            }`} />
+            
             <button
               onClick={toggle}
-              disabled={!isLive}
-              className={`relative size-44 rounded-full flex items-center justify-center shadow-2xl transition duration-3xl ${
-                isLive 
-                  ? "bg-white text-black active:scale-95 hover:scale-[1.01] cursor-pointer" 
-                  : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700/50"
-              }`}
+              className="relative size-44 rounded-full flex items-center justify-center shadow-2xl transition duration-300 bg-white text-black active:scale-95 hover:scale-[1.01] cursor-pointer"
             >
               {loading ? (
-                <Loader2 className="size-16 animate-spin" strokeWidth={1.5} />
+                <Loader2 className="size-16 animate-spin text-neutral-800" strokeWidth={1.5} />
               ) : playing ? (
-                <Pause className="size-16" strokeWidth={1.5} fill="currentColor" />
+                <Pause className="size-16 text-neutral-900" strokeWidth={1.5} fill="currentColor" />
               ) : (
-                <Play className={`size-16 ml-2 ${!isLive ? "text-neutral-600" : ""}`} strokeWidth={1.5} fill="currentColor" />
+                <Play className="size-16 ml-2 text-neutral-900" strokeWidth={1.5} fill="currentColor" />
               )}
             </button>
           </div>
 
           <div className="mt-6 text-center">
-            <div className="text-sm font-semibold tracking-wide">
-              {playing ? "A escutar o programa" : loading ? "A ligar..." : isLive ? "Toca para ouvir o direto!" : "Fora do horário de transmissão"}
+            <div className="text-sm font-semibold tracking-wide flex items-center justify-center gap-1.5">
+              {playing 
+                ? isLive ? "A escutar o programa em direto!" : "A escutar música do programa" 
+                : loading ? "A ligar..." 
+                : isLive ? "Toca para ouvir o direto!" 
+                : "Toca para ouvir a música de fundo"}
             </div>
             <div className="text-xs text-neutral-500 mt-1">Rádio Marcoense · 93.3 FM</div>
+          </div>
+
+          <div className="mt-6 w-full max-w-xs bg-white/[0.02] border border-white/5 p-3 rounded-xl">
+            <div className="flex items-center gap-3">
+              <button onClick={() => setMuted((m) => !m)} className="text-neutral-400 hover:text-white transition">
+                {muted || volume === 0 ? <VolumeX className="size-4 text-red-400" /> : <Volume2 className="size-4" />}
+              </button>
+              <input
+                type="range" min={0} max={1} step={0.01} value={muted ? 0 : volume}
+                onChange={(e) => { setMuted(false); setVolume(parseFloat(e.target.value)); }}
+                className="flex-1 h-1 rounded-full appearance-none bg-white/10 accent-red-500 cursor-pointer"
+              />
+              <span className="text-xs tabular-nums text-neutral-400 w-6 text-right font-medium">
+                {Math.round((muted ? 0 : volume) * 100)}
+              </span>
+            </div>
           </div>
 
           {!isLive && (
             <div className="mt-6 w-full max-w-xs bg-amber-500/[0.03] border border-amber-500/10 p-4 rounded-xl text-center">
               <div className="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-medium tracking-wide uppercase text-[10px]">
-                <Clock className="size-3.5" /> Próximo programa inicia em:
+                <Clock className="size-3.5" /> Próximo programa em direto:
               </div>
               <div className="text-lg font-mono font-bold text-neutral-200 mt-2 tracking-wider tabular-nums">
                 {countdownText || "A carregar..."}
-              </div>
-            </div>
-          )}
-
-          {isLive && (
-            <div className="mt-8 w-full max-w-xs bg-white/[0.02] border border-white/5 p-3 rounded-xl">
-              <div className="flex items-center gap-3">
-                <button onClick={() => setMuted((m) => !m)} className="text-neutral-400 hover:text-white transition">
-                  {muted || volume === 0 ? <VolumeX className="size-4 text-red-400" /> : <Volume2 className="size-4" />}
-                </button>
-                <input
-                  type="range" min={0} max={1} step={0.01} value={muted ? 0 : volume}
-                  onChange={(e) => { setMuted(false); setVolume(parseFloat(e.target.value)); }}
-                  className="flex-1 h-1 rounded-full appearance-none bg-white/10 accent-red-500 cursor-pointer"
-                />
-                <span className="text-xs tabular-nums text-neutral-400 w-6 text-right font-medium">
-                  {Math.round((muted ? 0 : volume) * 100)}
-                </span>
               </div>
             </div>
           )}
@@ -262,7 +252,7 @@ export default function App() {
             } />
             <SocialButton href={SOCIALS.spotify} label="Spotify" icon={
               <svg viewBox="0 0 24 24" className="size-4" fill="currentColor">
-                <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 0 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
+                <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 1 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
               </svg>
             } />
             <SocialButton href={SOCIALS.website} label="Web" icon={<Globe className="size-4" />} />
@@ -295,7 +285,6 @@ export default function App() {
             <ContactRow icon={<Phone className="size-4" />} label="Telefone / WhatsApp" value="+351 255 000 000" href="tel:+351255000000" />
           </div>
           
-          {/* RODAPÉ ATUALIZADO */}
           <p className="mt-6 text-center text-[10px] text-neutral-600 font-light tracking-wide">
             © Circuito Interno 2026
           </p>
