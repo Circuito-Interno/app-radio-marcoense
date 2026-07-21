@@ -10,7 +10,6 @@ const SOCIALS = {
   website: "https://www.marcoensefm.com",
 };
 
-// Configuração exata dos horários dos teus programas (Dias: 2=Terça, 3=Quarta, 4=Quinta, 5=Sexta, 6=Sábado)
 const SHOWS_CONFIG = [
   { name: "Circuito Interno - Romântico", days: [2, 3, 4], startHour: 22, startMin: 0, endHour: 24, endMin: 0, label: "Terça a Quinta - 22h00 às 24h00" },
   { name: "Circuito Interno - Rock & Indie Alternativo", days: [5], startHour: 22, startMin: 0, endHour: 24, endMin: 0, label: "Sexta - 22h00 às 24h00" },
@@ -25,19 +24,16 @@ export default function App() {
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Estados para o controlo de tempo e emissão ativa
   const [isLive, setIsLive] = useState(false);
   const [countdownText, setCountdownText] = useState("");
 
-  // Função central que valida se há algum programa a dar AGORA e calcula o tempo para o próximo
   const updateStreamStatus = () => {
     const now = new Date();
-    const currentDay = now.getDay(); // 0=Domingo, 1=Segunda, etc.
+    const currentDay = now.getDay();
     const currentHour = now.getHours();
     const currentMin = now.getMinutes();
     const currentTimeInMins = currentHour * 60 + currentMin;
 
-    // 1. Verificar se está EM DIRETO neste preciso segundo
     let liveDetected = false;
     SHOWS_CONFIG.forEach(show => {
       if (show.days.includes(currentDay)) {
@@ -51,13 +47,11 @@ export default function App() {
 
     setIsLive(liveDetected);
 
-    // Se estiver em direto, não precisamos de mostrar contagem decrescente
     if (liveDetected) {
       setCountdownText("");
       return;
     }
 
-    // Se a emissão cair enquanto tocava fora do horário, desliga o player por segurança
     if (!liveDetected && playing) {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -66,17 +60,14 @@ export default function App() {
       setPlaying(false);
     }
 
-    // 2. Calcular quanto falta para o PRÓXIMO programa
     let minDiff = Infinity;
-    
     SHOWS_CONFIG.forEach(show => {
       show.days.forEach(day => {
         let dayDiff = day - currentDay;
         if (dayDiff < 0 || (dayDiff === 0 && currentTimeInMins >= (show.startHour * 60 + show.startMin))) {
-          dayDiff += 7; // Passa para a próxima semana
+          dayDiff += 7;
         }
 
-        // Criar data alvo para o início desse programa específico
         const targetDate = new Date(now);
         targetDate.setDate(now.getDate() + dayDiff);
         targetDate.setHours(show.startHour, show.startMin, 0, 0);
@@ -88,7 +79,6 @@ export default function App() {
       });
     });
 
-    // Converter a diferença de Milissegundos para Dias, Horas, Minutos e Segundos
     if (minDiff !== Infinity) {
       const totalSecs = Math.floor(minDiff / 1000);
       const days = Math.floor(totalSecs / (3600 * 24));
@@ -104,7 +94,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Inicializa o áudio
     audioRef.current = new Audio();
     const a = audioRef.current;
 
@@ -124,7 +113,6 @@ export default function App() {
     a.addEventListener("canplay", handleCanPlay);
     a.addEventListener("error", handleError);
 
-    // Executa a validação do relógio imediatamente e atualiza a cada 1 segundo
     updateStreamStatus();
     const timer = setInterval(updateStreamStatus, 1000);
 
@@ -146,9 +134,8 @@ export default function App() {
   }, [volume, muted]);
 
   const toggle = async () => {
-    // Segurança: se um ouvinte tentar forçar o Play fora do horário, bloqueia
     if (!isLive) {
-      alert("A emissão do Circuito Interno encontra-se fechada. Por favor, aguarde pelo início do próximo programa! 🎧");
+      alert("A emissão do programa Circuito Interno encontra-se fechada de momento. Acompanhe a contagem decrescente para o próximo programa!");
       return;
     }
 
@@ -194,10 +181,16 @@ export default function App() {
               <span className={`absolute inline-flex h-full w-full rounded-full bg-red-500/60 ${playing ? "animate-ping" : ""}`}></span>
               <span className={`relative inline-flex size-2 rounded-full ${isLive ? "bg-red-500" : "bg-neutral-500"}`}></span>
             </span>
-            {isLive ? "Em direto · Circuito Interno" : "Emissão Fechada"}
+            {isLive ? "Programa Em Direto" : "Emissão Fechada"}
           </div>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight bg-gradient-to-b from-white to-neutral-400 bg-clip-text text-transparent">Rádio Marcoense</h1>
-          <p className="mt-1 text-sm text-neutral-400 font-medium tracking-wide">Circuito Interno</p>
+
+          {/* DESTAQUE PRINCIPAL NO CIRCUITO INTERNO */}
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight bg-gradient-to-b from-white to-neutral-300 bg-clip-text text-transparent">
+            Circuito Interno
+          </h1>
+          <p className="mt-1 text-xs text-neutral-400 font-medium tracking-wide">
+            Emissão em direto na Rádio Marcoense · 93.3 FM
+          </p>
         </header>
 
         <section className="flex-1 flex flex-col items-center justify-center py-6">
@@ -226,10 +219,9 @@ export default function App() {
             <div className="text-sm font-semibold tracking-wide">
               {playing ? "A escutar o programa" : loading ? "A ligar..." : isLive ? "Toca para ouvir o direto!" : "Fora do horário de transmissão"}
             </div>
-            <div className="text-xs text-neutral-500 mt-1">circuito interno</div>
+            <div className="text-xs text-neutral-500 mt-1">Rádio Marcoense · 93.3 FM</div>
           </div>
 
-          {/* CRONÓMETRO / CONTAGEM DECRESCENTE (Apenas aparece fora do horário) */}
           {!isLive && (
             <div className="mt-6 w-full max-w-xs bg-amber-500/[0.03] border border-amber-500/10 p-4 rounded-xl text-center">
               <div className="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-medium tracking-wide uppercase text-[10px]">
@@ -302,8 +294,10 @@ export default function App() {
             <ContactRow icon={<Mail className="size-4" />} label="Email" value="circuitointerno@marcoensefm.com" href="mailto:circuitointerno@marcoensefm.com" />
             <ContactRow icon={<Phone className="size-4" />} label="Telefone / WhatsApp" value="+351 255 000 000" href="tel:+351255000000" />
           </div>
+          
+          {/* RODAPÉ ATUALIZADO */}
           <p className="mt-6 text-center text-[10px] text-neutral-600 font-light tracking-wide">
-            © Rádio Marcoense · 93.3 FM
+            © Circuito Interno 2026
           </p>
         </section>
 
