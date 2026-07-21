@@ -45,22 +45,26 @@ export default function App() {
       if (res.ok) {
         const data = await res.json();
         if (data && data.now_playing && data.now_playing.song) {
-          const title = isLive ? currentShowName : (data.now_playing.song.title || "Música no Ar");
-          const artist = isLive ? "Rádio Marcoense · 93.3 FM" : (data.now_playing.song.artist || "Circuito Interno");
+          const songTitle = data.now_playing.song.title || "Música no Ar";
+          const songArtist = data.now_playing.song.artist || "Circuito Interno";
+          
+          const title = isLive ? currentShowName : songTitle;
+          // Junta o nome do Artista com o nome da Rádio para garantir que aparece sempre
+          const artist = isLive ? "Rádio Marcoense 93.3 FM · Circuito Interno" : `${songArtist} · Circuito Interno`;
           const artworkUrl = data.now_playing.song.art || "/logo.png";
 
           setCurrentSong({
-            title: data.now_playing.song.title || "Música no Ar",
-            artist: data.now_playing.song.artist || "Circuito Interno",
+            title: songTitle,
+            artist: songArtist,
             art: data.now_playing.song.art || ""
           });
 
-          // Envia a informação da música diretamente para o ecrã de bloqueio do iOS / Android
+          // Mostra Banda, Música e Circuito Interno no ecrã de bloqueio
           if ("mediaSession" in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
               title: title,
               artist: artist,
-              album: "Circuito Interno",
+              album: "Circuito Interno - Rádio Online",
               artwork: [
                 { src: artworkUrl, sizes: "512x512", type: "image/png" }
               ]
