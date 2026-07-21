@@ -312,22 +312,25 @@ export default function App() {
           )}
         </section>
 
-        {/* Links de Canais e Redes Sociais (5 plataformas) */}
+        {/* 5 Ícones Oficiais Todos na Mesma Linha */}
         <section className="py-3 shrink-0">
-          <div className="grid grid-cols-5 gap-1.5">
-            <SocialButton href={SOCIALS.website} label="Web" icon={<Globe className="size-3.5" />} />
-            <SocialButton href={SOCIALS.instagram} label="Insta" icon={
-              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          <div className="text-center text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-500 mb-2">
+            Canais & Redes Sociais
+          </div>
+          <div className="flex items-center justify-between gap-2 max-w-xs mx-auto">
+            <SocialIconButton href={SOCIALS.website} title="Website" icon={<Globe className="size-5" />} />
+            <SocialIconButton href={SOCIALS.instagram} title="Instagram" icon={
+              <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
             } />
-            <SocialButton href={SOCIALS.facebook} label="FB" icon={
-              <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            <SocialIconButton href={SOCIALS.facebook} title="Facebook" icon={
+              <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
             } />
-            <SocialButton href={SOCIALS.spotify} label="Spotify" icon={
-              <svg viewBox="0 0 24 24" className="size-3.5" fill="currentColor">
+            <SocialIconButton href={SOCIALS.spotify} title="Spotify" icon={
+              <svg viewBox="0 0 24 24" className="size-5 text-emerald-400" fill="currentColor">
                 <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 1 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
               </svg>
             } />
-            <SocialButton href={SOCIALS.youtube} label="YouTube" icon={<Youtube className="size-3.5 text-red-500" />} />
+            <SocialIconButton href={SOCIALS.youtube} title="YouTube" icon={<Youtube className="size-5 text-red-500" />} />
           </div>
         </section>
 
@@ -370,11 +373,16 @@ export default function App() {
   );
 }
 
-function SocialButton({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
+function SocialIconButton({ href, title, icon }: { href: string; title: string; icon: React.ReactNode }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1.5 rounded-xl border border-white/5 bg-white/[0.02] py-2.5 text-neutral-400 hover:text-white hover:bg-white/[0.05] transition active:scale-95">
+    <a 
+      href={href} 
+      target="_blank" 
+      rel="noreferrer" 
+      title={title}
+      className="size-11 rounded-2xl border border-white/10 bg-white/[0.03] flex items-center justify-center text-neutral-300 hover:text-white hover:bg-white/[0.08] hover:border-white/20 transition duration-200 active:scale-90 shadow-md"
+    >
       {icon}
-      <span className="text-[9px] font-bold uppercase tracking-wider">{label}</span>
     </a>
   );
 }
