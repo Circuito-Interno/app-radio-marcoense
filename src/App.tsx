@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 
 // VERSÃO ATUAL DA APP - Mudar este número aciona o botão de atualização no ecrã dos ouvintes!
-const APP_BUILD_ID = "1.0.2";
+const APP_BUILD_ID = "1.0.3";
 
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
 const API_NOWPLAYING = "https://azuracast.rhoster.pt/api/nowplaying/circuito_interno";
