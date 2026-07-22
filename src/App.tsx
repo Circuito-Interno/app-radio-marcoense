@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, Globe, ShieldCheck, X } from "lucide-react";
+import { Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, Globe, ShieldCheck, X, Mic, Send } from "lucide-react";
 
-// Stream oficial do AzuraCast
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
-// API para ler a música a tocar em tempo real
 const API_NOWPLAYING = "https://azuracast.rhoster.pt/api/nowplaying/circuito_interno";
 
 const SOCIALS = {
@@ -15,9 +13,9 @@ const SOCIALS = {
 };
 
 const SHOWS_CONFIG = [
-  { name: "Circuito Interno - Romântico", days: [2, 3, 4], startHour: 22, startMin: 0, endHour: 24, endMin: 0, label: "Terça a Quinta - 22h00 às 24h00" },
-  { name: "Circuito Interno - Rock & Indie Alternativo", days: [5], startHour: 22, startMin: 0, endHour: 24, endMin: 0, label: "Sexta - 22h00 às 24h00" },
-  { name: "Circuito Interno - Grandes Clássicos", days: [6], startHour: 13, startMin: 0, endHour: 15, endMin: 0, label: "Sábado - 13h00 às 15h00" }
+  { name: "Circuito Interno - Romântico", days: [2, 3, 4], startHour: 22, startMin: 0, endHour: 24, endMin: 0, label: "Terça a Quinta · 22h00 às 24h00" },
+  { name: "Circuito Interno - Rock & Indie Alternativo", days: [5], startHour: 22, startMin: 0, endHour: 24, endMin: 0, label: "Sexta · 22h00 às 24h00" },
+  { name: "Circuito Interno - Grandes Clássicos", days: [6], startHour: 13, startMin: 0, endHour: 15, endMin: 0, label: "Sábado · 13h00 às 15h00" }
 ];
 
 interface SongInfo {
@@ -227,68 +225,78 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-neutral-100 flex flex-col antialiased">
-      <div className="w-full max-w-md mx-auto flex-1 flex flex-col px-6">
+    <div className="min-h-screen bg-[#080808] text-neutral-100 flex flex-col antialiased selection:bg-amber-500 selection:text-black">
+      <div className="w-full max-w-md mx-auto flex-1 flex flex-col px-5">
         
         {error && (
-          <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-center text-xs text-red-200">
+          <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-center text-xs text-red-200 backdrop-blur-md">
             {error}
           </div>
         )}
 
-        <header className="pt-8 pb-4 text-center shrink-0 flex flex-col items-center gap-1.5">
-          <div className="mb-2">
+        {/* Topo / Header */}
+        <header className="pt-8 pb-3 text-center shrink-0 flex flex-col items-center gap-2">
+          <div className="relative group cursor-pointer">
+            <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
             <img 
               src="/logo.png" 
               alt="Circuito Interno Logo" 
-              className="h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(249,115,22,0.4)]" 
+              className="relative h-14 w-auto object-contain drop-shadow-[0_0_20px_rgba(249,115,22,0.35)]" 
             />
           </div>
 
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl font-black tracking-tight text-white mt-1">
             Circuito Interno
           </h1>
 
-          <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.18em] transition-all ${
-            isLive ? "border-red-500/30 bg-red-500/10 text-red-400" : "border-amber-500/30 bg-amber-500/10 text-amber-400"
+          <div className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 shadow-lg ${
+            isLive 
+              ? "border-red-500/40 bg-red-500/15 text-red-400 shadow-red-500/10" 
+              : "border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-amber-500/5"
           }`}>
             <span className="relative flex size-2">
-              <span className={`absolute inline-flex h-full w-full rounded-full ${isLive ? "bg-red-500/60" : "bg-amber-500/60"} ${playing ? "animate-ping" : ""}`}></span>
+              <span className={`absolute inline-flex h-full w-full rounded-full ${isLive ? "bg-red-500/80" : "bg-amber-500/80"} ${playing ? "animate-ping" : ""}`}></span>
               <span className={`relative inline-flex size-2 rounded-full ${isLive ? "bg-red-500" : "bg-amber-500"}`}></span>
             </span>
-            {isLive ? `Em Direto: ${currentShowName}` : "Emissão 24/7"}
+            {isLive ? `Em Direto · ${currentShowName}` : "Emissão Online 24/7"}
           </div>
         </header>
 
-        <section className="flex-1 flex flex-col items-center justify-center py-4">
-          {/* Botão de Play */}
-          <div className="relative">
+        {/* Leitor Principal */}
+        <section className="flex-1 flex flex-col items-center justify-center py-5">
+          
+          {/* Botão de Play com Aura / Animação */}
+          <div className="relative my-2">
             <div className={`absolute inset-0 rounded-full blur-3xl transition-all duration-700 ${
               playing 
-                ? isLive ? "opacity-50 scale-110 bg-gradient-to-br from-red-600 via-orange-500 to-pink-600" : "opacity-40 scale-105 bg-gradient-to-br from-amber-500 to-orange-600"
-                : "opacity-20 scale-90 bg-white/10"
+                ? isLive 
+                  ? "opacity-60 scale-125 bg-gradient-to-br from-red-600 via-orange-500 to-pink-600 animate-pulse" 
+                  : "opacity-50 scale-115 bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 animate-pulse"
+                : "opacity-15 scale-90 bg-white/20"
             }`} />
             
             <button
               onClick={toggle}
-              className={`relative size-40 rounded-full flex items-center justify-center shadow-2xl transition duration-300 active:scale-95 hover:scale-[1.01] cursor-pointer ${
-                isLive ? "bg-red-600 text-white" : "bg-amber-500 text-black"
+              className={`relative size-40 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 active:scale-95 hover:scale-[1.02] cursor-pointer border border-white/10 ${
+                isLive 
+                  ? "bg-gradient-to-br from-red-500 to-red-700 text-white shadow-red-900/40" 
+                  : "bg-gradient-to-br from-amber-400 to-amber-500 text-black shadow-amber-500/20"
               }`}
             >
               {loading ? (
                 <Loader2 className="size-14 animate-spin" strokeWidth={1.5} />
               ) : playing ? (
-                <Pause className="size-14" strokeWidth={1.5} fill="currentColor" />
+                <Pause className="size-14 fill-current" strokeWidth={1} />
               ) : isLive ? (
                 <Radio className="size-14" strokeWidth={1.5} />
               ) : (
-                <Music className="size-14" strokeWidth={1.5} />
+                <Music className="size-14 ml-1" strokeWidth={1.5} />
               )}
             </button>
           </div>
 
-          {/* Cartão "A Tocar Agora" */}
-          <div className="mt-6 w-full max-w-xs bg-white/[0.03] border border-white/10 p-3.5 rounded-2xl flex items-center gap-3.5 shadow-lg backdrop-blur-md">
+          {/* Cartão "A Tocar Agora" em Glassmorphism */}
+          <div className="mt-6 w-full max-w-xs bg-white/[0.04] border border-white/10 p-3.5 rounded-2xl flex items-center gap-3.5 shadow-xl backdrop-blur-xl">
             {currentSong && currentSong.art ? (
               <img 
                 src={currentSong.art} 
@@ -296,15 +304,15 @@ export default function App() {
                 className="size-12 rounded-xl object-cover shrink-0 shadow-md border border-white/10" 
               />
             ) : (
-              <div className="size-12 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="size-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
                 <Music className="size-6" />
               </div>
             )}
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                <span className="size-1.5 rounded-full bg-amber-400 animate-pulse" />
-                {isLive ? "A Transmitir" : "A Tocar Agora"}
+              <div className="flex items-center gap-1.5 text-[9px] font-extrabold uppercase tracking-widest text-amber-400">
+                <span className="size-1.5 rounded-full bg-amber-400 animate-ping" />
+                {isLive ? "No Ar Agora" : "A Tocar Agora"}
               </div>
               <div className="text-xs font-bold text-white truncate mt-0.5">
                 {isLive ? currentShowName : (currentSong?.title || "Circuito Interno")}
@@ -315,8 +323,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Controlo de Volume */}
-          <div className="mt-4 w-full max-w-xs bg-white/[0.02] border border-white/5 p-3 rounded-xl">
+          {/* Controlo de Volume Integrado */}
+          <div className="mt-3.5 w-full max-w-xs bg-white/[0.02] border border-white/5 p-3 rounded-xl backdrop-blur-md">
             <div className="flex items-center gap-3">
               <button 
                 onClick={handleMuteToggle} 
@@ -335,100 +343,114 @@ export default function App() {
                 className="flex-1 h-1 rounded-full appearance-none bg-white/10 accent-amber-500 cursor-pointer"
               />
               <span className="text-xs tabular-nums text-neutral-400 w-6 text-right font-medium">
-                {Math.round((muted ? 0 : volume) * 100)}
+                {Math.round((muted ? 0 : volume) * 100)}%
               </span>
             </div>
           </div>
 
           {!isLive && (
-            <div className="mt-4 w-full max-w-xs bg-amber-500/[0.03] border border-amber-500/10 p-3.5 rounded-xl text-center">
-              <div className="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-medium tracking-wide uppercase text-[10px]">
-                <Clock className="size-3.5" /> Próximo programa em direto na Rádio Marcoense:
+            <div className="mt-3.5 w-full max-w-xs bg-amber-500/[0.04] border border-amber-500/15 p-3.5 rounded-xl text-center backdrop-blur-md">
+              <div className="flex items-center justify-center gap-1.5 text-[10px] text-amber-400 font-bold tracking-widest uppercase">
+                <Clock className="size-3.5" /> Próximo programa na Rádio Marcoense:
               </div>
-              <div className="text-base font-mono font-bold text-neutral-200 mt-1.5 tracking-wider tabular-nums">
+              <div className="text-base font-mono font-bold text-neutral-100 mt-1 tracking-wider tabular-nums">
                 {countdownText || "A carregar..."}
               </div>
             </div>
           )}
         </section>
 
-        {/* 5 Canais sem texto e com ícones maiores */}
+        {/* Canais / Redes */}
         <section className="py-3 shrink-0">
-          <div className="text-center text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-500 mb-2.5">
-            Canais & Redes Sociais
+          <div className="text-center text-[10px] uppercase font-extrabold tracking-[0.25em] text-neutral-500 mb-2.5">
+            Canais Oficiais
           </div>
           <div className="grid grid-cols-5 gap-2 w-full">
-            <SocialTile href={SOCIALS.website} icon={<Globe className="size-6 text-amber-400" />} />
+            <SocialTile href={SOCIALS.website} icon={<Globe className="size-5 text-amber-400" />} />
             <SocialTile href={SOCIALS.instagram} icon={
-              <svg viewBox="0 0 24 24" className="size-6 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              <svg viewBox="0 0 24 24" className="size-5 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
             } />
             <SocialTile href={SOCIALS.facebook} icon={
-              <svg viewBox="0 0 24 24" className="size-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              <svg viewBox="0 0 24 24" className="size-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
             } />
             <SocialTile href={SOCIALS.spotify} icon={
-              <svg viewBox="0 0 24 24" className="size-6 text-emerald-400" fill="currentColor">
+              <svg viewBox="0 0 24 24" className="size-5 text-emerald-400" fill="currentColor">
                 <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 1 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
               </svg>
             } />
             <SocialTile href={SOCIALS.youtube} icon={
-              <svg viewBox="0 0 24 24" className="size-6 text-red-600" fill="currentColor">
+              <svg viewBox="0 0 24 24" className="size-5 text-red-600" fill="currentColor">
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
               </svg>
             } />
           </div>
         </section>
 
-        {/* Programas em Direto */}
+        {/* Programação */}
         <section className="py-3 shrink-0">
-          <div className="text-center text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-500 mb-2.5">
-            Programas em Direto na Rádio Marcoense 93.3 FM
+          <div className="text-center text-[10px] uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-2.5">
+            Programação em Direto · Rádio Marcoense 93.3 FM
           </div>
           <div className="space-y-2">
             {SHOWS_CONFIG.map((s) => (
-              <div key={s.name} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-4 py-2.5">
+              <div 
+                key={s.name} 
+                className={`flex items-center justify-between rounded-xl border px-4 py-3 transition duration-300 ${
+                  isLive && currentShowName === s.name
+                    ? "border-red-500/50 bg-red-500/10 shadow-lg shadow-red-500/5"
+                    : "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
+                }`}
+              >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="size-8 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center shrink-0">
+                  <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    isLive && currentShowName === s.name ? "bg-red-500 text-white animate-pulse" : "bg-white/5 text-amber-400"
+                  }`}>
                     <Radio className="size-4" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs font-semibold text-neutral-200 truncate">{s.name}</div>
-                    <div className="text-[11px] text-neutral-500 truncate mt-0.5">{s.label}</div>
+                    <div className="text-xs font-bold text-neutral-100 truncate">{s.name}</div>
+                    <div className="text-[11px] text-neutral-400 truncate mt-0.5">{s.label}</div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Produção e apresentação */}
-          <div className="mt-3 text-center text-[11px] text-amber-500/90 font-medium tracking-wide flex flex-col gap-0.5">
-            <span>Produção e apresentação:</span>
-            <span className="font-semibold text-amber-400">Paulo da Rocha Teixeira</span>
+          {/* Cartão do Autor elegante */}
+          <div className="mt-3.5 p-3 rounded-xl border border-amber-500/10 bg-amber-500/[0.02] flex items-center justify-center gap-2.5 text-center">
+            <Mic className="size-4 text-amber-400 shrink-0" />
+            <div className="text-xs text-neutral-300">
+              <span className="text-neutral-500">Produção e apresentação: </span>
+              <span className="font-bold text-amber-400">Paulo da Rocha Teixeira</span>
+            </div>
           </div>
         </section>
 
-        {/* Contactos do programa */}
+        {/* Contactos */}
         <section className="pt-3 pb-8 shrink-0">
-          <h2 className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-500 mb-2">Contactos do programa</h2>
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] divide-y divide-white/5">
+          <h2 className="text-[10px] uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-2">
+            Contactos do Programa
+          </h2>
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] divide-y divide-white/5 overflow-hidden">
             <ContactRow 
-              icon={<Mail className="size-4" />} 
-              label="Email" 
+              icon={<Mail className="size-4 text-amber-400" />} 
+              label="Email Oficial" 
               value="circuitointernoproducoes@gmail.com" 
               href="mailto:circuitointernoproducoes@gmail.com" 
             />
             <ContactRow 
               icon={<Phone className="size-4 text-emerald-400" />} 
-              label="WhatsApp" 
+              label="WhatsApp Directo" 
               value="+351 963 350 373" 
-              href="https://wa.me/351963350373" 
+              href="https://wa.me/351963350373?text=Ol%C3%A1%20Paulo!%20Estou%20a%20ouvir%20o%20Circuito%20Interno." 
             />
           </div>
           
-          {/* Rodapé com Copyright e Política de Privacidade */}
+          {/* Rodapé */}
           <div className="mt-6 flex flex-col items-center justify-center gap-1.5 text-[10px] text-neutral-500 font-light tracking-wide">
-            <div>© Circuito Interno 2026</div>
+            <div className="font-medium text-neutral-400">© Circuito Interno 2026</div>
             <button 
-              onClick={() => setShowPrivacyModal(true)} 
+              onClick={() => setShowPrivacyModal(false)} 
               className="text-neutral-500 hover:text-amber-400 underline underline-offset-2 transition cursor-pointer"
             >
               Política de Privacidade
@@ -438,9 +460,9 @@ export default function App() {
 
       </div>
 
-      {/* Modal simples de Política de Privacidade */}
+      {/* Modal de Privacidade */}
       {showPrivacyModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <div className="bg-[#121212] border border-white/10 rounded-2xl max-w-sm w-full p-5 text-neutral-300 relative shadow-2xl">
             <button 
               onClick={() => setShowPrivacyModal(false)}
@@ -454,26 +476,26 @@ export default function App() {
               Política de Privacidade
             </div>
 
-            <div className="text-xs space-y-2 text-neutral-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
+            <div className="text-xs space-y-2.5 text-neutral-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1 font-light">
               <p>
-                A aplicação <strong>Circuito Interno</strong> respeita totalmente a sua privacidade.
+                A aplicação <strong>Circuito Interno</strong> respeita integralmente a sua privacidade.
               </p>
               <p>
-                • <strong>Sem recolha de dados:</strong> Não recolhemos, armazenamos nem partilhamos dados pessoais, localização ou histórico de navegação dos utilizadores.
+                • <strong>Sem recolha de dados:</strong> Não recolhemos, armazenamos ou partilhamos informações pessoais, localização ou histórico de navegação.
               </p>
               <p>
-                • <strong>Transmissão de Áudio:</strong> O leitor liga-se diretamente ao sinal de emissão de áudio e metadados das músicas para reprodução em tempo real.
+                • <strong>Emissão de Áudio:</strong> O leitor apenas acede à transmissão de áudio em direto e metadados das músicas para reprodução em tempo real.
               </p>
               <p>
-                • <strong>Contacto:</strong> Para qualquer questão relacionada com a rádio ou aplicação, contacte circuitointernoproducoes@gmail.com.
+                • <strong>Contacto:</strong> Para qualquer questão, contacte circuitointernoproducoes@gmail.com.
               </p>
             </div>
 
             <button 
               onClick={() => setShowPrivacyModal(false)}
-              className="mt-5 w-full bg-amber-500 text-black font-semibold text-xs py-2.5 rounded-xl hover:bg-amber-400 transition"
+              className="mt-5 w-full bg-amber-500 text-black font-bold text-xs py-2.5 rounded-xl hover:bg-amber-400 transition"
             >
-              Entendido
+              Compreendido
             </button>
           </div>
         </div>
@@ -489,7 +511,7 @@ function SocialTile({ href, icon }: { href: string; icon: React.ReactNode }) {
       href={href} 
       target="_blank" 
       rel="noreferrer" 
-      className="flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-neutral-300 hover:text-white hover:bg-white/[0.08] transition duration-200 active:scale-95 shadow-sm"
+      className="flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] py-2.5 text-neutral-300 hover:text-white hover:bg-white/[0.08] hover:border-amber-500/30 transition duration-300 active:scale-95 shadow-sm"
     >
       {icon}
     </a>
@@ -498,12 +520,13 @@ function SocialTile({ href, icon }: { href: string; icon: React.ReactNode }) {
 
 function ContactRow({ icon, label, value, href }: { icon: React.ReactNode; label: string; value: string; href: string }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.01] transition active:bg-white/[0.02]">
-      <div className="size-7 rounded-md bg-white/5 flex items-center justify-center text-neutral-400">{icon}</div>
+    <a href={href} target="_blank" rel="noreferrer" className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition active:bg-white/[0.05]">
+      <div className="size-8 rounded-lg bg-white/5 flex items-center justify-center text-neutral-400">{icon}</div>
       <div className="min-w-0 flex-1">
-        <div className="text-[9px] uppercase font-bold tracking-wider text-neutral-500">{label}</div>
-        <div className="text-xs font-medium text-neutral-300 truncate mt-0.5">{value}</div>
+        <div className="text-[9px] uppercase font-bold tracking-widest text-neutral-500">{label}</div>
+        <div className="text-xs font-semibold text-neutral-200 truncate mt-0.5">{value}</div>
       </div>
+      <Send className="size-3.5 text-neutral-600" />
     </a>
   );
 }
