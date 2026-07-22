@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { 
   Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, 
-  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History 
+  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star 
 } from "lucide-react";
 
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
@@ -21,6 +21,14 @@ const SHOWS_CONFIG = [
   { name: "Circuito Interno - Grandes Clássicos", days: [6], startHour: 13, startMin: 0, endHour: 15, endMin: 0, label: "Sábado · 13h00 às 15h00" }
 ];
 
+const MUSIC_FACTS = [
+  "🎸 Sabias que o solo de 'Stairway to Heaven' foi gravado num único take?",
+  "📻 A Rádio Marcoense acompanha o teu dia com a melhor seleção musical.",
+  "🎹 O piano usado em 'Bohemian Rhapsody' foi o mesmo de 'Hey Jude'.",
+  "💿 'Thriller' de Michael Jackson continua a ser o álbum mais vendido de sempre.",
+  "🎵 Apoia o Circuito Interno partilhando a emissão com os teus amigos!"
+].join("  ✦  ");
+
 interface SongInfo {
   title: string;
   artist: string;
@@ -35,7 +43,6 @@ export default function App() {
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Modais e Estados Extras
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showSleepModal, setShowSleepModal] = useState(false);
   const [sleepTimer, setSleepTimer] = useState<number | null>(null);
@@ -295,7 +302,7 @@ export default function App() {
           </div>
           <button 
             onClick={() => setCarMode(false)}
-            className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl font-bold text-xs uppercase"
+            className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl font-bold text-xs uppercase cursor-pointer"
           >
             Sair
           </button>
@@ -313,7 +320,7 @@ export default function App() {
 
         <button
           onClick={toggle}
-          className={`w-full py-12 rounded-3xl font-black text-2xl flex items-center justify-center gap-4 transition active:scale-95 shadow-2xl ${
+          className={`w-full py-12 rounded-3xl font-black text-2xl flex items-center justify-center gap-4 transition active:scale-95 shadow-2xl cursor-pointer ${
             isLive ? "bg-red-600 text-white" : "bg-amber-500 text-black"
           }`}
         >
@@ -420,9 +427,9 @@ export default function App() {
         </header>
 
         {/* Leitor Principal */}
-        <section className="flex-1 flex flex-col items-center justify-center py-5">
+        <section className="flex-1 flex flex-col items-center justify-center py-4">
           
-          <div className="relative my-6 flex items-center justify-center">
+          <div className="relative my-4 flex items-center justify-center">
             <button
               onClick={toggle}
               className={`relative size-40 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 active:scale-95 hover:scale-[1.02] cursor-pointer border border-white/10 z-10 ${
@@ -446,7 +453,7 @@ export default function App() {
           </div>
 
           {/* Cartão "A Tocar Agora" */}
-          <div className="mt-4 w-full max-w-xs bg-white/[0.04] border border-white/10 p-3.5 rounded-2xl flex items-center gap-3.5 shadow-xl backdrop-blur-xl">
+          <div className="mt-3 w-full max-w-xs bg-white/[0.04] border border-white/10 p-3.5 rounded-2xl flex items-center gap-3.5 shadow-xl backdrop-blur-xl">
             {currentSong && currentSong.art ? (
               <img 
                 src={currentSong.art} 
@@ -470,6 +477,15 @@ export default function App() {
               <div className="text-[11px] text-neutral-400 truncate font-medium">
                 {isLive ? "Rádio Marcoense · 93.3 FM" : (currentSong?.artist || "Rádio Circuito Interno")}
               </div>
+            </div>
+          </div>
+
+          {/* Ticker Deslizante de Notícias/Curiosidades */}
+          <div className="mt-3.5 w-full max-w-xs overflow-hidden rounded-lg bg-amber-500/[0.03] border border-amber-500/10 py-2 relative shadow-inner">
+            <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
+            <div className="animate-ticker text-[10px] uppercase tracking-widest text-amber-400/80 font-bold">
+              {MUSIC_FACTS}
             </div>
           </div>
 
@@ -511,7 +527,7 @@ export default function App() {
         </section>
 
         {/* Canais / Redes */}
-        <section className="py-3 shrink-0">
+        <section className="py-2 shrink-0">
           <div className="text-center text-[10px] uppercase font-extrabold tracking-[0.25em] text-neutral-500 mb-2.5">
             Canais Oficiais
           </div>
@@ -537,7 +553,7 @@ export default function App() {
         </section>
 
         {/* Programação */}
-        <section className="py-3 shrink-0">
+        <section className="py-2 shrink-0">
           <div className="text-center text-[10px] uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-2.5">
             Programação em Direto · Rádio Marcoense 93.3 FM
           </div>
@@ -566,7 +582,6 @@ export default function App() {
             ))}
           </div>
 
-          {/* Autor */}
           <div className="mt-3.5 p-3 rounded-xl border border-amber-500/10 bg-amber-500/[0.02] flex items-center justify-center gap-2.5 text-center">
             <Mic className="size-4 text-amber-400 shrink-0" />
             <div className="text-xs text-neutral-300">
@@ -576,8 +591,29 @@ export default function App() {
           </div>
         </section>
 
+        {/* Secção de Patrocinadores */}
+        <section className="py-4 shrink-0">
+          <div className="text-center text-[10px] uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-2.5">
+            Parceiros & Apoios
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="h-12 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:bg-white/5 transition duration-300 cursor-pointer">
+              <div className="flex items-center gap-1.5 text-neutral-400">
+                <Star className="size-3.5" />
+                <span className="text-xs font-bold uppercase tracking-wide">Apoio 1</span>
+              </div>
+            </div>
+            <div className="h-12 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:bg-white/5 transition duration-300 cursor-pointer">
+              <div className="flex items-center gap-1.5 text-neutral-400">
+                <Star className="size-3.5" />
+                <span className="text-xs font-bold uppercase tracking-wide">Apoio 2</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Contactos */}
-        <section className="pt-3 pb-8 shrink-0">
+        <section className="pt-2 pb-8 shrink-0">
           <h2 className="text-[10px] uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-2">
             Contactos do Programa
           </h2>
@@ -610,36 +646,32 @@ export default function App() {
 
       </div>
 
-      {/* Modal Sleep Timer */}
+      {/* Modais */}
       {showSleepModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <div className="bg-[#121212] border border-white/10 rounded-2xl max-w-xs w-full p-5 text-neutral-300 relative shadow-2xl text-center">
-            <button onClick={() => setShowSleepModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
+            <button onClick={() => setShowSleepModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer">
               <X className="size-5" />
             </button>
-
             <div className="flex items-center justify-center gap-2 text-amber-400 font-bold text-sm mb-4">
               <Moon className="size-5" /> Temporizador de Adormecer
             </div>
-
             <p className="text-xs text-neutral-400 mb-4">A rádio desliga-se automaticamente após o tempo selecionado:</p>
-
             <div className="grid grid-cols-2 gap-2">
               {[15, 30, 45, 60].map((mins) => (
                 <button
                   key={mins}
                   onClick={() => startSleepTimer(mins)}
-                  className="py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-amber-500 hover:text-black transition"
+                  className="py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-amber-500 hover:text-black transition cursor-pointer"
                 >
                   {mins} Minutos
                 </button>
               ))}
             </div>
-
             {sleepTimer !== null && (
               <button
                 onClick={() => startSleepTimer(0)}
-                className="mt-3 w-full py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold"
+                className="mt-3 w-full py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-bold cursor-pointer"
               >
                 Desativar Temporizador
               </button>
@@ -648,18 +680,15 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal Músicas Recentes */}
       {showHistoryModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <div className="bg-[#121212] border border-white/10 rounded-2xl max-w-xs w-full p-5 text-neutral-300 relative shadow-2xl">
-            <button onClick={() => setShowHistoryModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white">
+            <button onClick={() => setShowHistoryModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white cursor-pointer">
               <X className="size-5" />
             </button>
-
             <div className="flex items-center gap-2 text-amber-400 font-bold text-sm mb-4">
               <History className="size-5" /> Músicas Recentes
             </div>
-
             <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
               {history.map((song, idx) => (
                 <div key={idx} className="flex items-center gap-3 p-2 bg-white/5 rounded-xl border border-white/5">
@@ -681,26 +710,22 @@ export default function App() {
         </div>
       )}
 
-      {/* Modal de Privacidade */}
       {showPrivacyModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <div className="bg-[#121212] border border-white/10 rounded-2xl max-w-sm w-full p-5 text-neutral-300 relative shadow-2xl">
-            <button onClick={() => setShowPrivacyModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1">
+            <button onClick={() => setShowPrivacyModal(false)} className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1 cursor-pointer">
               <X className="size-5" />
             </button>
-
             <div className="flex items-center gap-2 text-amber-400 font-bold text-sm mb-3">
               <ShieldCheck className="size-5" /> Política de Privacidade
             </div>
-
             <div className="text-xs space-y-2.5 text-neutral-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1 font-light">
               <p>A aplicação <strong>Circuito Interno</strong> respeita integralmente a sua privacidade.</p>
               <p>• <strong>Sem recolha de dados:</strong> Não recolhemos ou armazenamos dados pessoais.</p>
               <p>• <strong>Emissão de Áudio:</strong> Transmissão de áudio em direto e metadados das músicas.</p>
               <p>• <strong>Contacto:</strong> circuitointernoproducoes@gmail.com.</p>
             </div>
-
-            <button onClick={() => setShowPrivacyModal(false)} className="mt-5 w-full bg-amber-500 text-black font-bold text-xs py-2.5 rounded-xl hover:bg-amber-400 transition">
+            <button onClick={() => setShowPrivacyModal(false)} className="mt-5 w-full bg-amber-500 text-black font-bold text-xs py-2.5 rounded-xl hover:bg-amber-400 transition cursor-pointer">
               Compreendido
             </button>
           </div>
@@ -713,12 +738,7 @@ export default function App() {
 
 function SocialTile({ href, icon }: { href: string; icon: React.ReactNode }) {
   return (
-    <a 
-      href={href} 
-      target="_blank" 
-      rel="noreferrer" 
-      className="flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] py-2.5 text-neutral-300 hover:text-white hover:bg-white/[0.08] hover:border-amber-500/30 transition duration-300 active:scale-95 shadow-sm"
-    >
+    <a href={href} target="_blank" rel="noreferrer" className="flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] py-2.5 text-neutral-300 hover:text-white hover:bg-white/[0.08] hover:border-amber-500/30 transition duration-300 active:scale-95 shadow-sm">
       {icon}
     </a>
   );
