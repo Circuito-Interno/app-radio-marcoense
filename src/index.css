@@ -28,10 +28,10 @@
   }
 }
 
-@utility animate-ticker {
+/* Animação do Ticker em CSS padrão para evitar erros */
+.animate-ticker {
   display: inline-flex;
   white-space: nowrap;
-  /* 120s garante um movimento super lento e legivel */
   animation: tickerLoop 120s linear infinite;
 }
 
