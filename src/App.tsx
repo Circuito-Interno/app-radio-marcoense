@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, Globe } from "lucide-react";
+import { Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, Globe, ShieldCheck, X } from "lucide-react";
 
 // Stream oficial do AzuraCast
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
@@ -33,6 +33,7 @@ export default function App() {
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   
   const [isLive, setIsLive] = useState(false);
   const [currentShowName, setCurrentShowName] = useState("");
@@ -398,7 +399,7 @@ export default function App() {
             ))}
           </div>
 
-          {/* Produção e apresentação logo abaixo dos programas */}
+          {/* Produção e apresentação */}
           <div className="mt-3 text-center text-[11px] text-amber-500/90 font-medium tracking-wide flex flex-col gap-0.5">
             <span>Produção e apresentação:</span>
             <span className="font-semibold text-amber-400">Paulo da Rocha Teixeira</span>
@@ -423,13 +424,61 @@ export default function App() {
             />
           </div>
           
-          {/* Rodapé final simples */}
-          <p className="mt-6 text-center text-[10px] text-neutral-600 font-light tracking-wide">
-            © Circuito Interno
-          </p>
+          {/* Rodapé com Copyright e Política de Privacidade */}
+          <div className="mt-6 flex flex-col items-center justify-center gap-1.5 text-[10px] text-neutral-500 font-light tracking-wide">
+            <div>© Circuito Interno 2026</div>
+            <button 
+              onClick={() => setShowPrivacyModal(true)} 
+              className="text-neutral-500 hover:text-amber-400 underline underline-offset-2 transition cursor-pointer"
+            >
+              Política de Privacidade
+            </button>
+          </div>
         </section>
 
       </div>
+
+      {/* Modal simples de Política de Privacidade */}
+      {showPrivacyModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121212] border border-white/10 rounded-2xl max-w-sm w-full p-5 text-neutral-300 relative shadow-2xl">
+            <button 
+              onClick={() => setShowPrivacyModal(false)}
+              className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1"
+            >
+              <X className="size-5" />
+            </button>
+
+            <div className="flex items-center gap-2 text-amber-400 font-bold text-sm mb-3">
+              <ShieldCheck className="size-5" />
+              Política de Privacidade
+            </div>
+
+            <div className="text-xs space-y-2 text-neutral-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
+              <p>
+                A aplicação <strong>Circuito Interno</strong> respeita totalmente a sua privacidade.
+              </p>
+              <p>
+                • <strong>Sem recolha de dados:</strong> Não recolhemos, armazenamos nem partilhamos dados pessoais, localização ou histórico de navegação dos utilizadores.
+              </p>
+              <p>
+                • <strong>Transmissão de Áudio:</strong> O leitor liga-se diretamente ao sinal de emissão de áudio e metadados das músicas para reprodução em tempo real.
+              </p>
+              <p>
+                • <strong>Contacto:</strong> Para qualquer questão relacionada com a rádio ou aplicação, contacte circuitointernoproducoes@gmail.com.
+              </p>
+            </div>
+
+            <button 
+              onClick={() => setShowPrivacyModal(false)}
+              className="mt-5 w-full bg-amber-500 text-black font-semibold text-xs py-2.5 rounded-xl hover:bg-amber-400 transition"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
