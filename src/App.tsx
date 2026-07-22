@@ -4,7 +4,8 @@ import {
   Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star, MessageCircle, RefreshCw 
 } from "lucide-react";
 
-const APP_BUILD_ID = "v1.0.2";
+// VERSÃO ATUAL DA APP - Mudar este número aciona o botão de atualização no ecrã dos ouvintes!
+const APP_BUILD_ID = "1.0.2";
 
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
 const API_NOWPLAYING = "https://azuracast.rhoster.pt/api/nowplaying/circuito_interno";
@@ -66,13 +67,15 @@ export default function App() {
   const [countdownText, setCountdownText] = useState("");
   const [currentSong, setCurrentSong] = useState<SongInfo | null>(null);
 
+  // Verificação de versão ativa a cada 15 segundos
   useEffect(() => {
     const checkVersion = async () => {
       try {
         const res = await fetch("/index.html?nocache=" + new Date().getTime());
         if (res.ok) {
           const text = await res.text();
-          if (text.includes("app-build-id") && !text.includes(`app-build-id="${APP_BUILD_ID}"`)) {
+          const match = text.match(/<meta\s+name="app-version"\s+content="([^"]+)"/);
+          if (match && match[1] && match[1] !== APP_BUILD_ID) {
             setUpdateAvailable(true);
           }
         }
@@ -81,7 +84,8 @@ export default function App() {
       }
     };
 
-    const interval = setInterval(checkVersion, 30000);
+    checkVersion();
+    const interval = setInterval(checkVersion, 15000);
     return () => clearInterval(interval);
   }, []);
 
