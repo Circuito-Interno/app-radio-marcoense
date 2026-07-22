@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { 
   Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, 
-  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star, MessageCircle 
+  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star, MessageCircle, RefreshCw 
 } from "lucide-react";
 
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
@@ -21,7 +21,6 @@ const SHOWS_CONFIG = [
   { name: "Circuito Interno - Grandes Clássicos", days: [6], startHour: 13, startMin: 0, endHour: 15, endMin: 0, label: "Sábado · 13h00 às 15h00" }
 ];
 
-// CURIOSIDADES, EFEMÉRIDES ESPECÍFICAS DE HOJE (22 JULHO) E AGENDA COM ARTISTAS
 const MUSIC_FACTS = [
   "🎂 NASCERAM NESTE DIA (22 JULHO): Don Henley (Eagles) celebra 79 anos ✦ Al Di Meola (lenda da guitarra) faz 72 anos ✦ George Clinton (Parliament-Funkadelic) faz 85 anos ✦ Pat Badger (Extreme) faz 59 anos!",
   "🕯️ EM MEMÓRIA (22 JULHO): Homenagem a Duke Fakir (fundador dos The Four Tops, falecido em 2024), Phillip Walker (mestre do blues) e Rob McConnell (lenda do jazz).",
@@ -44,6 +43,10 @@ export default function App() {
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Detetor de Nova Versão
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
+
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showSleepModal, setShowSleepModal] = useState(false);
   const [showSongRequestModal, setShowSongRequestModal] = useState(false);
@@ -62,6 +65,31 @@ export default function App() {
   const [currentShowName, setCurrentShowName] = useState("");
   const [countdownText, setCountdownText] = useState("");
   const [currentSong, setCurrentSong] = useState<SongInfo | null>(null);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener("statechange", () => {
+              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                setUpdateAvailable(true);
+                setWaitingWorker(newWorker);
+              }
+            });
+          }
+        });
+      });
+    }
+  }, []);
+
+  const handleApplyUpdate = () => {
+    if (waitingWorker) {
+      waitingWorker.postMessage({ type: "SKIP_WAITING" });
+    }
+    window.location.reload();
+  };
 
   const fetchNowPlaying = async () => {
     try {
@@ -361,6 +389,23 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#080808] text-neutral-100 flex flex-col antialiased selection:bg-amber-500 selection:text-black">
+      
+      {/* BANNER DE ATUALIZAÇÃO NO TOPO ABSOLUTO */}
+      {updateAvailable && (
+        <div className="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black py-2.5 px-4 flex items-center justify-between shadow-xl z-50 border-b border-black/10">
+          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wide">
+            <RefreshCw className="size-4 animate-spin shrink-0 text-black" />
+            <span>Nova versão do Circuito Interno disponível!</span>
+          </div>
+          <button 
+            onClick={handleApplyUpdate}
+            className="bg-black text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-xl hover:bg-neutral-800 transition cursor-pointer shrink-0 shadow"
+          >
+            Atualizar
+          </button>
+        </div>
+      )}
+
       <div className="w-full max-w-md mx-auto flex-1 flex flex-col px-5">
         
         {error && (
@@ -557,7 +602,7 @@ export default function App() {
 
         {/* Canais / Redes */}
         <section className="py-2 shrink-0">
-          <div className="text-center text-[10px] uppercase font-extrabold tracking-[0.25em] text-neutral-500 mb-2.5">
+          <div className="text-center text-[10px] uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-2.5">
             Canais Oficiais
           </div>
           <div className="grid grid-cols-5 gap-2 w-full">
