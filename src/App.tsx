@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { 
   Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, 
-  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Smartphone 
+  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History 
 } from "lucide-react";
 
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
@@ -38,8 +38,8 @@ export default function App() {
   // Modais e Estados Extras
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showSleepModal, setShowSleepModal] = useState(false);
-  const [sleepTimer, setSleepTimer] = useState<number | null>(null); // minutos restantes
-  const [sleepIntervalId, setSleepIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const [sleepTimer, setSleepTimer] = useState<number | null>(null);
+  const [sleepIntervalId, setSleepIntervalId] = useState<any>(null);
   const [history, setHistory] = useState<SongInfo[]>([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [carMode, setCarMode] = useState(false);
@@ -76,7 +76,6 @@ export default function App() {
             return newSong;
           });
 
-          // PWA / MediaSession
           if ("mediaSession" in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
               title: mainTitle,
@@ -195,7 +194,6 @@ export default function App() {
     };
   }, []);
 
-  // Lógica do Sleep Timer
   const startSleepTimer = (minutes: number) => {
     if (sleepIntervalId) clearInterval(sleepIntervalId);
     
@@ -287,7 +285,6 @@ export default function App() {
     }
   };
 
-  // MODO CARRO (Interface Simplificada e Gigante)
   if (carMode) {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-between p-6 select-none">
