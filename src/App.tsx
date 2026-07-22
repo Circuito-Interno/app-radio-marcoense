@@ -238,15 +238,19 @@ export default function App() {
           </div>
         )}
 
-        <header className="pt-8 pb-4 text-center shrink-0 flex flex-col items-center">
+        <header className="pt-8 pb-4 text-center shrink-0 flex flex-col items-center gap-1.5">
           
-          <div className="mb-3">
+          <div className="mb-2">
             <img 
               src="/logo.png" 
               alt="Circuito Interno Logo" 
               className="h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(249,115,22,0.4)]" 
             />
           </div>
+
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">
+            Circuito Interno
+          </h1>
 
           <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.18em] transition-all ${
             isLive ? "border-red-500/30 bg-red-500/10 text-red-400" : "border-amber-500/30 bg-amber-500/10 text-amber-400"
@@ -255,28 +259,9 @@ export default function App() {
               <span className={`absolute inline-flex h-full w-full rounded-full ${isLive ? "bg-red-500/60" : "bg-amber-500/60"} ${playing ? "animate-ping" : ""}`}></span>
               <span className={`relative inline-flex size-2 rounded-full ${isLive ? "bg-red-500" : "bg-amber-500"}`}></span>
             </span>
-            {isLive ? "Programa Em Direto" : "Emissão 24/7"}
+            {isLive ? `Em Direto: ${currentShowName}` : "Emissão 24/7"}
           </div>
-
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white">
-            Circuito Interno
-          </h1>
           
-          <p className="mt-1 text-xs font-medium tracking-wide transition-all duration-300">
-            {isLive ? (
-              <span className="text-red-400 font-semibold flex items-center justify-center gap-1">
-                🔴 Em direto na Rádio Marcoense · 93.3 FM
-              </span>
-            ) : (
-              <span className="text-neutral-400">
-                A tua rádio online 24h/7d
-              </span>
-            )}
-          </p>
-
-          <p className="mt-1.5 text-[11px] font-medium text-amber-500/90 tracking-wider uppercase">
-            Produção e apresentação: Paulo da Rocha Teixeira
-          </p>
         </header>
 
         <section className="flex-1 flex flex-col items-center justify-center py-4">
@@ -390,16 +375,17 @@ export default function App() {
                 <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 1 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
               </svg>
             } />
-            <<SocialTile href={SOCIALS.youtube} icon={
-  <svg viewBox="0 0 24 24" className="size-6 text-red-600" fill="currentColor">
-    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-  </svg>
-} />
+            <SocialTile href={SOCIALS.youtube} icon={
+              <svg viewBox="0 0 24 24" className="size-6 text-red-600" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            } />
+          </div>
+        </section>
 
         <section className="py-3 shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-500">Programas em Direto</h2>
-            <span className="text-[9px] text-amber-500/80 font-medium">Na Rádio Marcoense 93.3 FM</span>
+          <div className="text-center text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-500 mb-2.5">
+            Programas em Direto na Rádio Marcoense 93.3 FM
           </div>
           <div className="space-y-2">
             {SHOWS_CONFIG.map((s) => (
@@ -435,9 +421,11 @@ export default function App() {
             />
           </div>
           
-          <p className="mt-6 text-center text-[10px] text-neutral-600 font-light tracking-wide">
-            © Circuito Interno 2026 · Paulo da Rocha Teixeira
-          </p>
+          <div className="mt-6 text-center text-[10px] text-neutral-600 tracking-wide font-light flex flex-col gap-0.5">
+            <span>Produção e apresentação</span>
+            <span className="font-medium text-neutral-500">Paulo da Rocha Teixeira</span>
+            <span className="mt-1.5 opacity-70">© Circuito Interno 2026</span>
+          </div>
         </section>
 
       </div>
