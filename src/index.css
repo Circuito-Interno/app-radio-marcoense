@@ -19,17 +19,20 @@
   animation: circularPulse 1.2s infinite ease-in-out !important;
 }
 
-@keyframes tickerScroll {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+/* NOVO TICKER CONTINUO E INSTANTÂNEO */
+@keyframes tickerLoop {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.animate-ticker {
-  display: inline-block;
+@utility animate-ticker {
+  display: inline-flex;
   white-space: nowrap;
-  padding-left: 100%;
-  /* Aumentado para 90s para deslizar de forma muito lenta e fácil de ler */
-  animation: tickerScroll 90s linear infinite;
+  animation: tickerLoop 45s linear infinite;
 }
 
 .animate-ticker:hover {

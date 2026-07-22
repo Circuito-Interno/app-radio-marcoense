@@ -510,12 +510,13 @@ export default function App() {
             </div>
           </div>
 
-          {/* Ticker Deslizante com Informações de Música e Notícias */}
+          {/* Ticker Deslizante de Notícias/Curiosidades sem Espera */}
           <div className="mt-3.5 w-full max-w-xs overflow-hidden rounded-lg bg-amber-500/[0.03] border border-amber-500/10 py-2 relative shadow-inner">
             <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
             <div className="animate-ticker text-[10px] uppercase tracking-widest text-amber-400/80 font-bold">
-              {MUSIC_FACTS}
+              <span>{MUSIC_FACTS}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+              <span>{MUSIC_FACTS}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
             </div>
           </div>
 
