@@ -21,15 +21,13 @@ const SHOWS_CONFIG = [
   { name: "Circuito Interno - Grandes Clássicos", days: [6], startHour: 13, startMin: 0, endHour: 15, endMin: 0, label: "Sábado · 13h00 às 15h00" }
 ];
 
+// CURIOSIDADES, NOTÍCIAS, EFEMÉRIDES E AGENDA DE CONCERTOS EM PORTUGAL (22 DE JULHO)
 const MUSIC_FACTS = [
-  "📍 Circuito Interno · Emissão emitida com orgulho a partir de Marco de Canaveses!",
-  "🎂 ANIVERSÁRIOS: Parabéns a todos os grandes artistas nascidos neste dia no universo da música.",
-  "🕯️ EM MEMÓRIA: Recordamos os grandes nomes da música que nos deixaram neste dia.",
-  "🎟️ CONCERTOS EM PORTUGAL: Fica atento aos próximos grandes espetáculos a anunciar nas salas nacionais (MEO Arena, Coliseus e festivais).",
-  "🎸 CRÍTICA & NOTÍCIAS: Os últimos lançamentos das tuas bandas favoritas continuam em destaque na nossa emissão.",
-  "💡 CURIOSIDADE: Sabias que 'Bohemian Rhapsody' dos Queen demorou mais de 3 semanas a ser gravada em estúdio?",
-  "📢 SEJA NOSSO PARCEIRO: Promova a sua empresa no Circuito Interno e chegue a milhares de ouvintes! Contacte-nos.",
-  "📲 PARTILHA A APP: Gostas do que ouves? Partilha a aplicação do Circuito Interno com os teus amigos e família!"
+  "🎂 PARABÉNS HOJE (22 JULHO): Don Henley (Eagles) celebra 79 anos ✦ Al Di Meola festeja 72 anos ✦ George Clinton (Parliament-Funkadelic) comemora 85 anos ✦ Pat Badger (Extreme) faz 59 anos!",
+  "🕯️ EM MEMÓRIA (22 JULHO): Recordamos Duke Fakir, vocalista e fundador dos The Four Tops (falecido em 2024) e Phillip Walker (mestre do blues, falecido em 2010).",
+  "🎟️ AGENDA CONCERTOS PORTUGAL: Sol da Caparica (13-16 Ago, Costa da Caparica) ✦ Vodafone Paredes de Coura (12-15 Ago, Coura) ✦ CA Vilar de Mouros (20-22 Ago, Caminha) ✦ MEO Kalorama (28-30 Ago, Parque da Bela Vista, Lisboa) ✦ Laura Pausini (22 Out, MEO Arena, Lisboa) ✦ Bryan Adams (17-18 Nov, MEO Arena, Lisboa).",
+  "📢 SEJA NOSSO PARCEIRO: Promova a sua empresa no Circuito Interno e chegue a milhares de ouvintes! Contacte-nos via WhatsApp ou Email.",
+  "📲 PARTILHA A APP: Gostas da nossa seleção musical? Clica no ícone de partilha no topo e envia a aplicação do Circuito Interno aos teus amigos!"
 ].join("  ✦  ");
 
 interface SongInfo {
@@ -510,7 +508,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Ticker Deslizante de Notícias/Curiosidades sem Espera */}
+          {/* Ticker Deslizante com Informações de Música e Notícias */}
           <div className="mt-3.5 w-full max-w-xs overflow-hidden rounded-lg bg-amber-500/[0.03] border border-amber-500/10 py-2 relative shadow-inner">
             <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
