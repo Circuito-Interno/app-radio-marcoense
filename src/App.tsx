@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { 
   Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, 
-  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star, MessageCircle, RefreshCw 
+  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star, MessageCircle 
 } from "lucide-react";
-
-// VERSÃO ATUAL DA APP - Mudar este número aciona o botão de atualização no ecrã dos ouvintes!
-const APP_BUILD_ID = "1.0.3";
 
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
 const API_NOWPLAYING = "https://azuracast.rhoster.pt/api/nowplaying/circuito_interno";
@@ -45,8 +42,6 @@ export default function App() {
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  const [updateAvailable, setUpdateAvailable] = useState(false);
 
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showSleepModal, setShowSleepModal] = useState(false);
@@ -66,32 +61,6 @@ export default function App() {
   const [currentShowName, setCurrentShowName] = useState("");
   const [countdownText, setCountdownText] = useState("");
   const [currentSong, setCurrentSong] = useState<SongInfo | null>(null);
-
-  // Verificação de versão ativa a cada 15 segundos
-  useEffect(() => {
-    const checkVersion = async () => {
-      try {
-        const res = await fetch("/index.html?nocache=" + new Date().getTime());
-        if (res.ok) {
-          const text = await res.text();
-          const match = text.match(/<meta\s+name="app-version"\s+content="([^"]+)"/);
-          if (match && match[1] && match[1] !== APP_BUILD_ID) {
-            setUpdateAvailable(true);
-          }
-        }
-      } catch (e) {
-        console.error("Erro ao verificar versão:", e);
-      }
-    };
-
-    checkVersion();
-    const interval = setInterval(checkVersion, 15000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleApplyUpdate = () => {
-    window.location.reload();
-  };
 
   const fetchNowPlaying = async () => {
     try {
@@ -392,24 +361,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#080808] text-neutral-100 flex flex-col antialiased selection:bg-amber-500 selection:text-black">
       
-      {/* BANNER DE ATUALIZAÇÃO NO TOPO ABSOLUTO */}
-      {updateAvailable && (
-        <div className="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black py-2.5 px-4 flex items-center justify-between shadow-xl z-50 border-b border-black/10">
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wide">
-            <RefreshCw className="size-4 animate-spin shrink-0 text-black" />
-            <span>Nova versão do Circuito Interno disponível!</span>
-          </div>
-          <button 
-            onClick={handleApplyUpdate}
-            className="bg-black text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-xl hover:bg-neutral-800 transition cursor-pointer shrink-0 shadow"
-          >
-            Atualizar
-          </button>
-        </div>
-      )}
-
-      {/* CONTAINER PRINCIPAL ADAPTÁVEL (Largo no PC, Estreito no Telemóvel) */}
-      <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col px-4 sm:px-8 py-6">
+      {/* CONTAINER PRINCIPAL TOTALMENTE EXPANDIDO E FLUIDO */}
+      <div className="w-full max-w-7xl mx-auto flex-1 flex flex-col px-4 sm:px-8 py-6">
         
         {error && (
           <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-center text-xs text-red-200 backdrop-blur-md">
@@ -474,11 +427,11 @@ export default function App() {
           </div>
         </div>
 
-        {/* ESTRUTURA EM 2 COLUNAS NO PC (GRID RESPONSIVO) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start my-auto py-6">
+        {/* ESTRUTURA EXPANDIDA (GRELHA 2 COLUNAS NO PC QUE OCUPA O ECRÃ INTEIRO) */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch my-auto py-6">
           
-          {/* PAINEL ESQUERDO: LEITOR E EMISSÃO (Ocupa 7 colunas no PC) */}
-          <div className="lg:col-span-7 flex flex-col items-center justify-center text-center space-y-5 bg-white/[0.01] border border-white/5 p-6 sm:p-8 rounded-3xl shadow-2xl backdrop-blur-md">
+          {/* PAINEL ESQUERDO: LEITOR E EMISSÃO (Ocupa 6 Colunas no PC) */}
+          <div className="md:col-span-6 flex flex-col items-center justify-center text-center space-y-6 bg-white/[0.01] border border-white/5 p-6 sm:p-10 rounded-3xl shadow-2xl backdrop-blur-md w-full">
             
             {/* Header / Logo */}
             <div className="flex flex-col items-center gap-2">
@@ -487,11 +440,11 @@ export default function App() {
                 <img 
                   src="/logo.png" 
                   alt="Circuito Interno Logo" 
-                  className="relative h-16 w-auto object-contain drop-shadow-[0_0_20px_rgba(249,115,22,0.35)]" 
+                  className="relative h-16 sm:h-20 w-auto object-contain drop-shadow-[0_0_20px_rgba(249,115,22,0.35)]" 
                 />
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white mt-1">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mt-1">
                 Circuito Interno
               </h1>
 
@@ -512,7 +465,7 @@ export default function App() {
             <div className="relative py-2 flex items-center justify-center">
               <button
                 onClick={toggle}
-                className={`relative size-44 sm:size-48 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 active:scale-95 hover:scale-[1.02] cursor-pointer border border-white/10 z-10 ${
+                className={`relative size-44 sm:size-52 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 active:scale-95 hover:scale-[1.02] cursor-pointer border border-white/10 z-10 ${
                   playing ? "button-pulsing" : ""
                 } ${
                   isLive 
@@ -521,58 +474,58 @@ export default function App() {
                 }`}
               >
                 {loading ? (
-                  <Loader2 className="size-16 animate-spin" strokeWidth={1.5} />
+                  <Loader2 className="size-16 sm:size-20 animate-spin" strokeWidth={1.5} />
                 ) : playing ? (
-                  <Pause className="size-16 fill-current" strokeWidth={1} />
+                  <Pause className="size-16 sm:size-20 fill-current" strokeWidth={1} />
                 ) : isLive ? (
-                  <Radio className="size-16" strokeWidth={1.5} />
+                  <Radio className="size-16 sm:size-20" strokeWidth={1.5} />
                 ) : (
-                  <Music className="size-16 ml-1" strokeWidth={1.5} />
+                  <Music className="size-16 sm:size-20 ml-1" strokeWidth={1.5} />
                 )}
               </button>
             </div>
 
-            {/* Cartão "A Tocar Agora" */}
-            <div className="w-full max-w-sm bg-white/[0.04] border border-white/10 p-4 rounded-2xl flex items-center gap-4 shadow-xl backdrop-blur-xl">
+            {/* Cartão "A Tocar Agora" Expandido */}
+            <div className="w-full bg-white/[0.04] border border-white/10 p-4 sm:p-5 rounded-2xl flex items-center gap-4 shadow-xl backdrop-blur-xl">
               {currentSong && currentSong.art ? (
                 <img 
                   src={currentSong.art} 
                   alt="Capa" 
-                  className="size-14 rounded-xl object-cover shrink-0 shadow-md border border-white/10" 
+                  className="size-14 sm:size-16 rounded-xl object-cover shrink-0 shadow-md border border-white/10" 
                 />
               ) : (
-                <div className="size-14 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
-                  <Music className="size-7" />
+                <div className="size-14 sm:size-16 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                  <Music className="size-8" />
                 </div>
               )}
 
               <div className="min-w-0 flex-1 text-left">
-                <div className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-amber-400">
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-amber-400">
                   <span className="size-1.5 rounded-full bg-amber-400 animate-ping" />
                   {isLive ? "No Ar Agora" : "A Tocar Agora"}
                 </div>
-                <div className="text-sm font-bold text-white truncate mt-0.5">
+                <div className="text-sm sm:text-base font-bold text-white truncate mt-0.5">
                   {isLive ? currentShowName : (currentSong?.title || "Circuito Interno")}
                 </div>
-                <div className="text-xs text-neutral-400 truncate font-medium">
+                <div className="text-xs sm:text-sm text-neutral-400 truncate font-medium">
                   {isLive ? "Rádio Circuito Interno" : (currentSong?.artist || "Rádio Circuito Interno")}
                 </div>
               </div>
             </div>
 
             {/* Ticker Deslizante de Notícias */}
-            <div className="w-full max-w-sm overflow-hidden rounded-xl bg-amber-500/[0.03] border border-amber-500/10 py-2.5 relative shadow-inner">
+            <div className="w-full overflow-hidden rounded-xl bg-amber-500/[0.03] border border-amber-500/10 py-3 relative shadow-inner">
               <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
-              <div className="animate-ticker text-[11px] uppercase tracking-widest text-amber-400/90 font-bold">
+              <div className="animate-ticker text-xs uppercase tracking-widest text-amber-400/90 font-bold">
                 <span>{MUSIC_FACTS}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
                 <span>{MUSIC_FACTS}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
               </div>
             </div>
 
             {/* Controlo de Volume */}
-            <div className="w-full max-w-sm bg-white/[0.02] border border-white/5 p-3.5 rounded-xl backdrop-blur-md">
-              <div className="flex items-center gap-3">
+            <div className="w-full bg-white/[0.02] border border-white/5 p-4 rounded-xl backdrop-blur-md">
+              <div className="flex items-center gap-4">
                 <button 
                   onClick={handleMuteToggle} 
                   className="text-neutral-400 hover:text-white transition cursor-pointer"
@@ -596,40 +549,40 @@ export default function App() {
             </div>
 
             {!isLive && (
-              <div className="w-full max-w-sm bg-amber-500/[0.04] border border-amber-500/15 p-3.5 rounded-xl text-center backdrop-blur-md">
-                <div className="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-bold tracking-widest uppercase">
+              <div className="w-full bg-amber-500/[0.04] border border-amber-500/15 p-4 rounded-xl text-center backdrop-blur-md">
+                <div className="flex items-center justify-center gap-2 text-xs text-amber-400 font-bold tracking-widest uppercase">
                   <Clock className="size-4" /> Próximo programa em Direto:
                 </div>
-                <div className="text-base font-mono font-bold text-neutral-100 mt-1 tracking-wider tabular-nums">
+                <div className="text-base sm:text-lg font-mono font-bold text-neutral-100 mt-1 tracking-wider tabular-nums">
                   {countdownText || "A carregar..."}
                 </div>
               </div>
             )}
           </div>
 
-          {/* PAINEL DIREITO: PROGRAMAÇÃO, CANAIS E INFORMAÇÕES (Ocupa 5 colunas no PC) */}
-          <div className="lg:col-span-5 space-y-6">
+          {/* PAINEL DIREITO: INFORMAÇÕES E AGENDA EXPANDIDA (Ocupa 6 Colunas no PC) */}
+          <div className="md:col-span-6 flex flex-col justify-between space-y-6">
             
             {/* Canais Oficiais */}
-            <div className="bg-white/[0.01] border border-white/5 p-5 rounded-2xl">
-              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-3">
+            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl">
+              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-4">
                 Canais Oficiais
               </div>
-              <div className="grid grid-cols-5 gap-2 w-full">
-                <SocialTile href={SOCIALS.website} icon={<Globe className="size-5 text-amber-400" />} />
+              <div className="grid grid-cols-5 gap-3 w-full">
+                <SocialTile href={SOCIALS.website} icon={<Globe className="size-6 text-amber-400" />} />
                 <SocialTile href={SOCIALS.instagram} icon={
-                  <svg viewBox="0 0 24 24" className="size-5 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                  <svg viewBox="0 0 24 24" className="size-6 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                 } />
                 <SocialTile href={SOCIALS.facebook} icon={
-                  <svg viewBox="0 0 24 24" className="size-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                  <svg viewBox="0 0 24 24" className="size-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                 } />
                 <SocialTile href={SOCIALS.spotify} icon={
-                  <svg viewBox="0 0 24 24" className="size-5 text-emerald-400" fill="currentColor">
+                  <svg viewBox="0 0 24 24" className="size-6 text-emerald-400" fill="currentColor">
                     <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm5.5 17.3a.75.75 0 0 1-1 .3c-2.8-1.7-6.3-2.1-10.4-1.2a.75.75 0 1 1-.3-1.4c4.5-1 8.3-.5 11.4 1.3.4.2.5.6.3 1Zm1.5-3.3a.94.94 0 1 1-1.3.3c-3.2-2-8.1-2.5-11.9-1.4a.94.94 0 1 1-.5-1.8c4.3-1.3 9.7-.7 13.4 1.6.5.3.6.9.3 1.3Zm.1-3.4c-3.9-2.3-10.3-2.5-14-1.4a1.12 1.12 0 1 1-.6-2.2c4.3-1.3 11.4-1 15.9 1.6a1.12 1.12 0 1 1-1.2 1.9Z" />
                   </svg>
                 } />
                 <SocialTile href={SOCIALS.youtube} icon={
-                  <svg viewBox="0 0 24 24" className="size-5 text-red-600" fill="currentColor">
+                  <svg viewBox="0 0 24 24" className="size-6 text-red-600" fill="currentColor">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                   </svg>
                 } />
@@ -637,38 +590,38 @@ export default function App() {
             </div>
 
             {/* Programação em Direto */}
-            <div className="bg-white/[0.01] border border-white/5 p-5 rounded-2xl">
-              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-3">
+            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl">
+              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-4">
                 Programação em Direto
               </div>
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {SHOWS_CONFIG.map((s) => (
                   <div 
                     key={s.name} 
-                    className={`flex items-center justify-between rounded-xl border px-4 py-3 transition duration-300 ${
+                    className={`flex items-center justify-between rounded-2xl border px-4 py-3.5 transition duration-300 ${
                       isLive && currentShowName === s.name
                         ? "border-red-500/50 bg-red-500/10 shadow-lg shadow-red-500/5"
                         : "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className={`size-9 rounded-xl flex items-center justify-center shrink-0 ${
                         isLive && currentShowName === s.name ? "bg-red-500 text-white animate-pulse" : "bg-white/5 text-amber-400"
                       }`}>
-                        <Radio className="size-4" />
+                        <Radio className="size-5" />
                       </div>
                       <div className="min-w-0 text-left">
-                        <div className="text-xs font-bold text-neutral-100 truncate">{s.name}</div>
-                        <div className="text-[11px] text-neutral-400 truncate mt-0.5">{s.label}</div>
+                        <div className="text-xs sm:text-sm font-bold text-neutral-100 truncate">{s.name}</div>
+                        <div className="text-xs text-neutral-400 truncate mt-0.5">{s.label}</div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-4 p-3 rounded-xl border border-amber-500/10 bg-amber-500/[0.02] flex items-center justify-center gap-2.5 text-center">
-                <Mic className="size-4 text-amber-400 shrink-0" />
-                <div className="text-xs text-neutral-300">
+              <div className="mt-4 p-3.5 rounded-2xl border border-amber-500/10 bg-amber-500/[0.02] flex items-center justify-center gap-3 text-center">
+                <Mic className="size-5 text-amber-400 shrink-0" />
+                <div className="text-xs sm:text-sm text-neutral-300">
                   <span className="text-neutral-500">Produção e apresentação: </span>
                   <span className="font-bold text-amber-400">Paulo da Rocha Teixeira</span>
                 </div>
@@ -676,20 +629,20 @@ export default function App() {
             </div>
 
             {/* Parceiros & Apoios */}
-            <div className="bg-white/[0.01] border border-white/5 p-5 rounded-2xl">
-              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-3">
+            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl">
+              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-4">
                 Parceiros & Apoios
               </div>
-              <div className="grid grid-cols-2 gap-2.5">
-                <div className="h-12 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:bg-white/5 transition duration-300 cursor-pointer">
-                  <div className="flex items-center gap-1.5 text-neutral-400">
-                    <Star className="size-3.5" />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="h-14 rounded-2xl border border-white/5 bg-white/[0.02] flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:bg-white/5 transition duration-300 cursor-pointer">
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <Star className="size-4" />
                     <span className="text-xs font-bold uppercase tracking-wide">Espaço Patrocinador</span>
                   </div>
                 </div>
-                <div className="h-12 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:bg-white/5 transition duration-300 cursor-pointer">
-                  <div className="flex items-center gap-1.5 text-neutral-400">
-                    <Star className="size-3.5" />
+                <div className="h-14 rounded-2xl border border-white/5 bg-white/[0.02] flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 hover:bg-white/5 transition duration-300 cursor-pointer">
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <Star className="size-4" />
                     <span className="text-xs font-bold uppercase tracking-wide">Espaço Patrocinador</span>
                   </div>
                 </div>
@@ -697,19 +650,19 @@ export default function App() {
             </div>
 
             {/* Contactos */}
-            <div className="bg-white/[0.01] border border-white/5 p-5 rounded-2xl">
-              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-3">
+            <div className="bg-white/[0.01] border border-white/5 p-6 rounded-3xl">
+              <div className="text-left text-xs uppercase font-extrabold tracking-[0.2em] text-neutral-500 mb-4">
                 Contactos do Programa
               </div>
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] divide-y divide-white/5 overflow-hidden text-left">
+              <div className="rounded-2xl border border-white/5 bg-white/[0.02] divide-y divide-white/5 overflow-hidden text-left">
                 <ContactRow 
-                  icon={<Mail className="size-4 text-amber-400" />} 
+                  icon={<Mail className="size-5 text-amber-400" />} 
                   label="Email Oficial" 
                   value="circuitointernoproducoes@gmail.com" 
                   href="mailto:circuitointernoproducoes@gmail.com" 
                 />
                 <ContactRow 
-                  icon={<Phone className="size-4 text-emerald-400" />} 
+                  icon={<Phone className="size-5 text-emerald-400" />} 
                   label="WhatsApp Directo" 
                   value="+351 963 350 373" 
                   href="https://wa.me/351963350373?text=Ol%C3%A1%20Paulo!%20Estou%20a%20ouvir%20o%20Circuito%20Interno." 
@@ -722,11 +675,11 @@ export default function App() {
         </div>
 
         {/* Rodapé */}
-        <footer className="pt-4 pb-6 text-center text-xs text-neutral-500 font-light tracking-wide border-t border-white/5 mt-auto">
+        <footer className="pt-6 pb-6 text-center text-xs text-neutral-500 font-light tracking-wide border-t border-white/5 mt-auto">
           <div className="font-medium text-neutral-400">© Circuito Interno 2026</div>
           <button 
             onClick={() => setShowPrivacyModal(true)} 
-            className="mt-1 text-neutral-500 hover:text-amber-400 underline underline-offset-2 transition cursor-pointer"
+            className="mt-1.5 text-neutral-500 hover:text-amber-400 underline underline-offset-2 transition cursor-pointer"
           >
             Política de Privacidade
           </button>
@@ -887,7 +840,7 @@ export default function App() {
 
 function SocialTile({ href, icon }: { href: string; icon: React.ReactNode }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] py-2.5 text-neutral-300 hover:text-white hover:bg-white/[0.08] hover:border-amber-500/30 transition duration-300 active:scale-95 shadow-sm">
+    <a href={href} target="_blank" rel="noreferrer" className="flex items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] py-3 text-neutral-300 hover:text-white hover:bg-white/[0.08] hover:border-amber-500/30 transition duration-300 active:scale-95 shadow-sm">
       {icon}
     </a>
   );
@@ -895,13 +848,13 @@ function SocialTile({ href, icon }: { href: string; icon: React.ReactNode }) {
 
 function ContactRow({ icon, label, value, href }: { icon: React.ReactNode; label: string; value: string; href: string }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition active:bg-white/[0.05]">
-      <div className="size-8 rounded-lg bg-white/5 flex items-center justify-center text-neutral-400">{icon}</div>
+    <a href={href} target="_blank" rel="noreferrer" className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-white/[0.03] transition active:bg-white/[0.05]">
+      <div className="size-9 rounded-xl bg-white/5 flex items-center justify-center text-neutral-400 shrink-0">{icon}</div>
       <div className="min-w-0 flex-1">
-        <div className="text-[9px] uppercase font-bold tracking-widest text-neutral-500">{label}</div>
-        <div className="text-xs font-semibold text-neutral-200 truncate mt-0.5">{value}</div>
+        <div className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">{label}</div>
+        <div className="text-xs sm:text-sm font-semibold text-neutral-200 truncate mt-0.5">{value}</div>
       </div>
-      <Send className="size-3.5 text-neutral-600" />
+      <Send className="size-4 text-neutral-600 shrink-0" />
     </a>
   );
 }
