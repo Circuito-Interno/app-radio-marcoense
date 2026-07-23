@@ -90,7 +90,7 @@ export default function App() {
         if (items.length > 0) {
           const titles: string[] = [];
           items.forEach((item, index) => {
-            if (index < 8 && item.textContent) {
+            if (index < 4 && item.textContent) {
               titles.push(item.textContent.trim());
             }
           });
@@ -565,7 +565,10 @@ export default function App() {
             }`}>
               <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
-              <div className="animate-ticker text-xs sm:text-sm uppercase tracking-wider font-extrabold">
+              <div 
+                className="animate-ticker text-xs sm:text-sm uppercase tracking-wider font-extrabold"
+                style={{ animationDuration: "18s" }}
+              >
                 <span>{newsText}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
                 <span>{newsText}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
               </div>
