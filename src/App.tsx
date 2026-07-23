@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { 
   Pause, Volume2, VolumeX, Mail, Phone, Radio, Loader2, Clock, Music, 
-  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star, MessageCircle 
+  Globe, ShieldCheck, X, Mic, Send, Moon, Share2, Car, History, Star, MessageCircle, AlertCircle
 } from "lucide-react";
 
 const STREAM_URL = "https://azuracast.rhoster.pt/listen/circuito_interno/radio.mp3";
@@ -21,13 +21,18 @@ const SHOWS_CONFIG = [
   { name: "Circuito Interno - Grandes Clássicos", days: [6], startHour: 13, startMin: 0, endHour: 15, endMin: 0, label: "Sábado · 13h00 às 15h00" }
 ];
 
-const MUSIC_FACTS = [
-  "🎂 NASCERAM NESTE DIA (22 JULHO): Don Henley (Eagles) celebra 79 anos ✦ Al Di Meola (lenda da guitarra) faz 72 anos ✦ George Clinton (Parliament-Funkadelic) faz 85 anos ✦ Pat Badger (Extreme) faz 59 anos!",
-  "🕯️ EM MEMÓRIA (22 JULHO): Homenagem a Duke Fakir (fundador dos The Four Tops, falecido em 2024), Phillip Walker (mestre do blues) e Rob McConnell (lenda do jazz).",
-  "🎟️ AGENDA & FESTIVAIS EM PORTUGAL: F. Mêda+ (22-25 Julho com Da Chick) ✦ Barrelas Summer Fest (24-25 Julho com Xutos & Pontapés, Slow J e Morcheeba) ✦ Morrissey (1 Ago, Super Bock Arena) ✦ MEO Monte Verde (6-8 Ago com Two Door Cinema Club e Calema) ✦ Paredes de Coura (12-15 Ago com Fontaines D.C.) ✦ Vilar de Mouros (20-22 Ago com Queens of the Stone Age) ✦ MEO Kalorama (28-30 Ago com Robbie Williams e Deftones).",
-  "📢 SEJA NOSSO PARCEIRO: Promova a sua marca no Circuito Interno e chegue a milhares de ouvintes em todo o país! Contacte-nos.",
-  "📲 PARTILHA A APP: Gostas da nossa seleção musical? Clica no botão de partilha no topo e envia aos teus amigos!"
-].join("  ✦  ");
+// FEEDS RSS DE JORNAIS PORTUGUESES E MUSICAIS (JN, PÚBLICO, BLITZ)
+const RSS_FEEDS = [
+  "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.jn.pt%2Frss%2Fultimas%2F",
+  "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fwww.publico.pt%2Fapi%2Ffeed%2Frss%2Fultimas",
+  "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Fexpresso.pt%2Fblitz%2Frss"
+];
+
+// NOTÍCIA DE ÚLTIMA HORA / DESTAQUE MANUAL (Muda "active: true" para ativar)
+const BREAKING_NEWS = {
+  active: false,
+  text: "🚨 ÚLTIMA HORA: Homenagem especial a Luís Represas hoje na emissão do Circuito Interno."
+};
 
 interface SongInfo {
   title: string;
@@ -61,6 +66,32 @@ export default function App() {
   const [currentShowName, setCurrentShowName] = useState("");
   const [countdownText, setCountdownText] = useState("");
   const [currentSong, setCurrentSong] = useState<SongInfo | null>(null);
+
+  // ESTADO DAS NOTÍCIAS
+  const [newsText, setNewsText] = useState<string>("A carregar as últimas notícias...");
+
+  // FUNÇÃO PARA BUSCAR NOTÍCIAS AUTOMÁTICAS DAS FONTES RSS
+  const fetchNews = async () => {
+    if (BREAKING_NEWS.active) {
+      setNewsText(BREAKING_NEWS.text);
+      return;
+    }
+
+    try {
+      const feedUrl = RSS_FEEDS[Math.floor(Math.random() * RSS_FEEDS.length)];
+      const res = await fetch(feedUrl);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+          const headlines = data.items.slice(0, 8).map((item: any) => item.title.trim()).join("  ✦  ");
+          setNewsText(`📰 ÚLTIMAS NOTÍCIAS: ${headlines}`);
+        }
+      }
+    } catch (e) {
+      console.error("Erro ao procurar notícias RSS:", e);
+      setNewsText("📢 CIRCUTO INTERNO: A sua rádio online 24/7 com os melhores clássicos e novidades!");
+    }
+  };
 
   const fetchNowPlaying = async () => {
     try {
@@ -190,13 +221,16 @@ export default function App() {
 
     updateStreamStatus();
     fetchNowPlaying();
+    fetchNews();
 
     const timer = setInterval(updateStreamStatus, 1000);
     const songTimer = setInterval(fetchNowPlaying, 10000);
+    const newsTimer = setInterval(fetchNews, 3600000); // Atualiza notícias de 60 em 60 minutos (1 hora)
 
     return () => {
       clearInterval(timer);
       clearInterval(songTimer);
+      clearInterval(newsTimer);
       a.pause();
       a.removeEventListener("playing", handlePlaying);
       a.removeEventListener("pause", handlePause);
@@ -427,10 +461,10 @@ export default function App() {
           </div>
         </div>
 
-        {/* GRELHA COMPACTA DE 2 COLUNAS (AJUSTADA PARA ENTRAR TUDO NO ECRÃ DO PC) */}
+        {/* GRELHA COMPACTA DE 2 COLUNAS */}
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center flex-1 my-auto py-2">
           
-          {/* PAINEL ESQUERDO: LEITOR E CONTROLOS (Ocupa 6 Colunas) */}
+          {/* PAINEL ESQUERDO: LEITOR E CONTROLOS */}
           <div className="lg:col-span-6 flex flex-col items-center justify-center text-center space-y-3.5 bg-white/[0.01] border border-white/5 p-4 sm:p-6 lg:p-8 rounded-3xl shadow-2xl backdrop-blur-md w-full h-full justify-between">
             
             {/* Header / Logo */}
@@ -513,13 +547,17 @@ export default function App() {
               </div>
             </div>
 
-            {/* Ticker Deslizante */}
-            <div className="w-full overflow-hidden rounded-xl bg-amber-500/[0.03] border border-amber-500/10 py-2 relative shadow-inner">
-              <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
-              <div className="animate-ticker text-[11px] sm:text-xs uppercase tracking-widest text-amber-400/90 font-bold">
-                <span>{MUSIC_FACTS}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
-                <span>{MUSIC_FACTS}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+            {/* TICKER DE NOTÍCIAS MAIOR E ATUALIZÁVEL */}
+            <div className={`w-full overflow-hidden rounded-xl py-3 px-2 relative shadow-inner border transition-colors ${
+              BREAKING_NEWS.active 
+                ? "bg-red-950/40 border-red-500/50 text-red-200" 
+                : "bg-amber-500/[0.05] border-amber-500/20 text-amber-300"
+            }`}>
+              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
+              <div className="animate-ticker text-xs sm:text-sm uppercase tracking-wider font-extrabold">
+                <span>{newsText}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
+                <span>{newsText}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
               </div>
             </div>
 
@@ -560,7 +598,7 @@ export default function App() {
             )}
           </div>
 
-          {/* PAINEL DIREITO: INFORMAÇÕES E PROGRAMAÇÃO (Ocupa 6 Colunas) */}
+          {/* PAINEL DIREITO: INFORMAÇÕES E PROGRAMAÇÃO */}
           <div className="lg:col-span-6 flex flex-col justify-between space-y-3.5 w-full h-full">
             
             {/* Canais Oficiais */}

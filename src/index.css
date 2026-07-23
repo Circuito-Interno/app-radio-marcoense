@@ -38,3 +38,9 @@
 .animate-ticker:hover {
   animation-play-state: paused;
 }
+
+.animate-ticker {
+  font-size: 1.15rem; /* Aumenta o tamanho da letra */
+  font-weight: 600;   /* Torna o texto mais legível/encorpado */
+  padding: 6px 0;     /* Dá mais altura à barra */
+}
