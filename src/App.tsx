@@ -90,7 +90,7 @@ export default function App() {
         if (items.length > 0) {
           const titles: string[] = [];
           items.forEach((item, index) => {
-            if (index < 3 && item.textContent) { // Reduzido para 3 notícias para acelerar ainda mais!
+            if (index < 5 && item.textContent) {
               titles.push(item.textContent.trim());
             }
           });
@@ -235,7 +235,7 @@ export default function App() {
 
     const timer = setInterval(updateStreamStatus, 1000);
     const songTimer = setInterval(fetchNowPlaying, 10000);
-    const newsTimer = setInterval(fetchNews, 3600000); // Atualiza notícias a cada 1 hora
+    const newsTimer = setInterval(fetchNews, 3600000);
 
     return () => {
       clearInterval(timer);
@@ -565,10 +565,7 @@ export default function App() {
             }`}>
               <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#080808] to-transparent z-10 pointer-events-none" />
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#080808] to-transparent z-10 pointer-events-none" />
-              <div 
-                className="animate-ticker text-xs sm:text-sm uppercase tracking-wider font-extrabold"
-                style={{ animationDuration: "10s" }} /* Velocidade super rápida: 10 segundos */
-              >
+              <div className="animate-ticker text-xs sm:text-sm uppercase tracking-wider font-extrabold">
                 <span>{newsText}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
                 <span>{newsText}&nbsp;&nbsp;✦&nbsp;&nbsp;</span>
               </div>
