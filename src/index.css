@@ -14,7 +14,7 @@
 .animate-ticker {
   display: inline-flex;
   white-space: nowrap;
-  animation: tickerLoop 25s linear infinite;
+  animation: tickerLoop 30s linear infinite;
   will-change: transform;
 }
 
